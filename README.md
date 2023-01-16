@@ -1,6 +1,4 @@
-<img src="src/main/resources/assets/screenfx/icon.png" width="240" align="right">
-
-# ScreenFX Master
+# ScreenFX Master <img src="src/main/resources/assets/screenfx/icon.png" width="215" align="right">
 <a href="https://modrinth.com/mod/screenfx">
   <img src="https://modrinth-utils.vercel.app/api/badge/downloads?id=screenfx&logo=true&style=for-the-badge">
 </a>
