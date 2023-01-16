@@ -34,4 +34,12 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static float vignetteOpacity = 1f;
 	@Entry(name = "screenfx.midnightconfig.configVignetteColour", isColor = true)
 	public static String vignetteColour = "#000000";
+	@Comment(centered = true)
+	public static Comment configPumpkinSettings;
+	@Entry(name = "screenfx.midnightconfig.configPumpkinOpacity", isSlider = true, min = 0f, max = 1f)
+	public static float pumpkinOpacity = 1f;
+	@Comment(centered = true)
+	public static Comment configPowderSnowSettings;
+	@Entry(name = "screenfx.midnightconfig.configPowderSnowOpacity", isSlider = true, min = 0f, max = 1f)
+	public static float powderSnowOpacity = 1f;
 }
