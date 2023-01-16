@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "screenfx",
+	"version": "${version}",
+	"name": "ScreenFX",
+	"description": "Adds fully configurable quality of life changes to various screen effects",
+	"authors": [
+		"LaryIsland"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/screenfx",
+		"sources": "https://github.com/LaryIsland/screenfx",
+		"issues": "https://github.com/LaryIsland/screenfx/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/screenfx/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.laryisland.screenfx.ScreenFX"
+		]
+	},
+	"mixins": [
+		"screenfx.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.11",
+		"minecraft": "~1.19.3",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}

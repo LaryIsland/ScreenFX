@@ -1,0 +1,10 @@
+{
+  "screenfx.midnightconfig.title": "ScreenFX Config",
+  "screenfx.midnightconfig.configFireSettings": "Fire Settings",
+  "screenfx.midnightconfig.configFireOpacity": "Fire Opacity",
+  "screenfx.midnightconfig.configFirePosition": "Fire Position",
+  "screenfx.midnightconfig.configFireCreativeHide": "Hide fire when in creative mode",
+  "screenfx.midnightconfig.configFireResistanceHide": "Hide fire when you have fire resistance",
+  "screenfx.midnightconfig.configUnderwaterSettings": "Underwater Settings",
+  "screenfx.midnightconfig.configUnderwaterOpacity": "Underwater Position"
+}
