@@ -78,10 +78,13 @@ public class InGameHudMixin {
 	)
 	private void renderVignetteOverlay_opacity(Args args) {
 		float[] rgbArray = new float[3];
-		Color.decode(ScreenFXConfig.vignetteColour).getRGBColorComponents(rgbArray);
-		args.set(0, (1f - rgbArray[0]) * ScreenFXConfig.vignetteOpacity);
-		args.set(1, (1f - rgbArray[1]) * ScreenFXConfig.vignetteOpacity);
-		args.set(2, (1f - rgbArray[2]) * ScreenFXConfig.vignetteOpacity);
+		try {
+			Color.decode(ScreenFXConfig.vignetteColour).getRGBColorComponents(rgbArray);
+		} catch (NumberFormatException e) {
+			rgbArray[0] = 0.f;
+			rgbArray[1] = 0.f;
+			rgbArray[2] = 0.f;
+		}
 	}
 
 	@ModifyArgs(
