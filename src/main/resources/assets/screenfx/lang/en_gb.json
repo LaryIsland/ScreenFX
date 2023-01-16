@@ -1,10 +1,18 @@
 {
-  "screenfx.midnightconfig.title": "ScreenFX Config",
-  "screenfx.midnightconfig.configFireSettings": "Fire Settings",
+  "screenfx.midnightconfig.configFireCreativeHide": "Hide fire when in creative mode",
   "screenfx.midnightconfig.configFireOpacity": "Fire Opacity",
   "screenfx.midnightconfig.configFirePosition": "Fire Position",
-  "screenfx.midnightconfig.configFireCreativeHide": "Hide fire when in creative mode",
   "screenfx.midnightconfig.configFireResistanceHide": "Hide fire when you have fire resistance",
+  "screenfx.midnightconfig.configFireSettings": "Fire Settings",
+  "screenfx.midnightconfig.configPortalOpacity": "Portal Opacity",
+  "screenfx.midnightconfig.configPortalSettings": "Portal Settings",
+  "screenfx.midnightconfig.configSpyglassOverlayOpacity": "Spyglass Overlay Opacity",
+  "screenfx.midnightconfig.configSpyglassSettings": "Spyglass Settings",
+  "screenfx.midnightconfig.configSpyglassTextureOpacity": "Spyglass Texture Opacity",
+  "screenfx.midnightconfig.configUnderwaterOpacity": "Underwater Opacity",
   "screenfx.midnightconfig.configUnderwaterSettings": "Underwater Settings",
-  "screenfx.midnightconfig.configUnderwaterOpacity": "Underwater Position"
+  "screenfx.midnightconfig.configVignetteColour": "Vignette Colour",
+  "screenfx.midnightconfig.configVignetteOpacity": "Vignette Opacity",
+  "screenfx.midnightconfig.configVignetteSettings": "Vignette Settings",
+  "screenfx.midnightconfig.title": "ScreenFX Config"
 }
