@@ -85,6 +85,9 @@ public class InGameHudMixin {
 			rgbArray[1] = 0.f;
 			rgbArray[2] = 0.f;
 		}
+		args.set(0, (1f - rgbArray[0]) * ScreenFXConfig.vignetteOpacity);
+		args.set(1, (1f - rgbArray[1]) * ScreenFXConfig.vignetteOpacity);
+		args.set(2, (1f - rgbArray[2]) * ScreenFXConfig.vignetteOpacity);
 	}
 
 	@ModifyArgs(

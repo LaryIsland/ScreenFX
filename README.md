@@ -1,4 +1,5 @@
 # ScreenFX <img src="src/main/resources/assets/screenfx/icon.png" width="215" align="right">
+
 <a href="https://modrinth.com/mod/screenfx">
   <img src="https://modrinth-utils.vercel.app/api/badge/downloads?id=screenfx&logo=true&style=for-the-badge">
 </a>
@@ -10,9 +11,18 @@
 
 ## ✅ Features
 
-- First person fire overlay
-  - Opacity
-  - Height
-  - Disable on context (Creative, Fire Immunity)
+- First person fire
+    - Opacity
+    - Height
+    - Disable on context (Creative, Fire Immunity)
+- Nether Portal swirling
+    - Opacity
+- Vignette
+    - Colour
+    - Opacity
+- Powder snow freezing effect
+    - Opacity
+- Spyglass
+    - Texture & overlay opacity
 - Underwater overlay
-  - Opacity
+    - Opacity
