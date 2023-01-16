@@ -6,10 +6,10 @@ import net.fabricmc.api.ClientModInitializer;
 
 public class ScreenFX implements ClientModInitializer {
 
-  public static final String MOD_ID = "screenfx";
+	public static final String MOD_ID = "screenfx";
 
-  @Override
-  public void onInitializeClient() {
-    MidnightConfig.init(MOD_ID, ScreenFXConfig.class);
-  }
+	@Override
+	public void onInitializeClient() {
+		MidnightConfig.init(MOD_ID, ScreenFXConfig.class);
+	}
 }
