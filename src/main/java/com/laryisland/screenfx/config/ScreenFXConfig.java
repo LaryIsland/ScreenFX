@@ -30,10 +30,13 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static int spyglassOverlayOpacity = 255;
 	@Comment(centered = true)
 	public static Comment configVignetteSettings;
-	@Entry(name = "screenfx.midnightconfig.configVignetteOpacity", isSlider = true, min = 0f, max = 1f)
-	public static float vignetteOpacity = 1f;
+	public enum vignetteModeEnum { FIXED, DYNAMIC }
+	@Entry(name = "screenfx.midnightconfig.configVignetteMode")
+	public static vignetteModeEnum vignetteMode = vignetteModeEnum.DYNAMIC;
 	@Entry(name = "screenfx.midnightconfig.configVignetteColour", isColor = true)
 	public static String vignetteColour = "#000000";
+	@Entry(name = "screenfx.midnightconfig.configVignetteOpacity", isSlider = true, min = 0f, max = 1f)
+	public static float vignetteOpacity = 1f;
 	@Comment(centered = true)
 	public static Comment configPumpkinSettings;
 	@Entry(name = "screenfx.midnightconfig.configPumpkinOpacity", isSlider = true, min = 0f, max = 1f)
@@ -42,4 +45,8 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static Comment configPowderSnowSettings;
 	@Entry(name = "screenfx.midnightconfig.configPowderSnowOpacity", isSlider = true, min = 0f, max = 1f)
 	public static float powderSnowOpacity = 1f;
+	@Comment(centered = true)
+	public static Comment configInWallSettings;
+	@Entry(name = "screenfx.midnightconfig.configInWallBrightness", isSlider = true, min = 0f, max = 1f)
+	public static float inWallBrightness = 0.1f;
 }

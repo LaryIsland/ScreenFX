@@ -4,6 +4,8 @@
 	"screenfx.midnightconfig.configFirePosition": "Fire Position",
 	"screenfx.midnightconfig.configFireResistanceHide": "Hide fire when you have fire resistance",
 	"screenfx.midnightconfig.configFireSettings": "Fire Settings",
+	"screenfx.midnightconfig.configInWallBrightness": "In Wall Brightness",
+	"screenfx.midnightconfig.configInWallSettings": "Stuck In Wall Settings",
 	"screenfx.midnightconfig.configPortalOpacity": "Portal Opacity",
 	"screenfx.midnightconfig.configPortalSettings": "Portal Settings",
 	"screenfx.midnightconfig.configPowderSnowOpacity": "Powder Snow Opacity",
@@ -16,7 +18,10 @@
 	"screenfx.midnightconfig.configUnderwaterOpacity": "Underwater Opacity",
 	"screenfx.midnightconfig.configUnderwaterSettings": "Underwater Settings",
 	"screenfx.midnightconfig.configVignetteColour": "Vignette Color",
+	"screenfx.midnightconfig.configVignetteMode": "Vignette Mode",
 	"screenfx.midnightconfig.configVignetteOpacity": "Vignette Opacity",
 	"screenfx.midnightconfig.configVignetteSettings": "Vignette Settings",
+	"screenfx.midnightconfig.enum.vignetteModeEnum.DYNAMIC": "Dynamic",
+	"screenfx.midnightconfig.enum.vignetteModeEnum.FIXED": "Fixed",
 	"screenfx.midnightconfig.title": "ScreenFX Config"
 }

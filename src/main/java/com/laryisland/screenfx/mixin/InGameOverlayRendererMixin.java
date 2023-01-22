@@ -9,6 +9,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(InGameOverlayRenderer.class)
 public class InGameOverlayRendererMixin {
@@ -54,5 +56,20 @@ public class InGameOverlayRendererMixin {
 	)
 	private static float renderUnderwaterOverlay_opacity(float alpha) {
 		return ScreenFXConfig.underwaterOpacity;
+	}
+
+	@ModifyArgs(
+			method = "renderInWallOverlay(Lnet/minecraft/client/texture/Sprite;Lnet/minecraft/client/util/math/MatrixStack;)V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/render/VertexConsumer;color(FFFF)Lnet/minecraft/client/render/VertexConsumer;"
+			)
+	)
+	private static void renderInWallOverlay_brightness(Args args) {
+		args.setAll(
+				ScreenFXConfig.inWallBrightness,
+				ScreenFXConfig.inWallBrightness,
+				ScreenFXConfig.inWallBrightness,
+				1f);
 	}
 }
