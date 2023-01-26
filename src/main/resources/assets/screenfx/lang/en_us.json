@@ -20,15 +20,17 @@
 	"screenfx.midnightconfig.spyglassOverlayOpacity": "Spyglass Overlay Opacity",
 	"screenfx.midnightconfig.spyglassSettings": "Spyglass Settings",
 	"screenfx.midnightconfig.spyglassTextureOpacity": "Spyglass Texture Opacity",
+	"screenfx.midnightconfig.title": "ScreenFX Config",
 	"screenfx.midnightconfig.underwaterOpacity": "Underwater Opacity",
 	"screenfx.midnightconfig.underwaterSettings": "Underwater Settings",
 	"screenfx.midnightconfig.vignetteColour": "Vignette Color",
 	"screenfx.midnightconfig.vignetteMode": "Vignette Mode",
 	"screenfx.midnightconfig.vignetteOpacity": "Vignette Opacity",
 	"screenfx.midnightconfig.vignetteSettings": "Vignette Settings",
+	"screenfx.midnightconfig.vignetteWorldBorderColour": "World Border Color",
+	"screenfx.midnightconfig.vignetteWorldBorderDisable": "Disable world border override",
 	"screenfx.midnightconfig.enum.distortionModeEnum.DYNAMIC": "Dynamic",
 	"screenfx.midnightconfig.enum.distortionModeEnum.FIXED": "Fixed",
 	"screenfx.midnightconfig.enum.vignetteModeEnum.DYNAMIC": "Dynamic",
-	"screenfx.midnightconfig.enum.vignetteModeEnum.FIXED": "Fixed",
-	"screenfx.midnightconfig.title": "ScreenFX Config"
+	"screenfx.midnightconfig.enum.vignetteModeEnum.FIXED": "Fixed"
 }

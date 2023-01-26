@@ -41,6 +41,11 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static String vignetteColour = "#000000";
 	@Entry(isSlider = true, min = 0f, max = 1f)
 	public static float vignetteOpacity = 1f;
+	@Entry(isColor = true)
+	public static String vignetteWorldBorderColour = "#FF0000";
+	@Entry
+	public static boolean vignetteWorldBorderDisable = false;
+
 
 	@Comment(centered = true)
 	public static Comment distortionSettings;

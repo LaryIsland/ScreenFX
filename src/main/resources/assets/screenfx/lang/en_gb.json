@@ -1,4 +1,5 @@
 {
 	"screenfx.midnightconfig.distortionColour": "Distortion Colour",
-	"screenfx.midnightconfig.vignetteColour": "Vignette Colour"
+	"screenfx.midnightconfig.vignetteColour": "Vignette Colour",
+	"screenfx.midnightconfig.vignetteWorldBorderColour": "World Border Colour"
 }

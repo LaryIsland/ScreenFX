@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.awt.Color;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +22,8 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 public class InGameHudMixin {
 
 	private static float opacity = 1f;
-
+	@Shadow
+	public float vignetteDarkness;
 	@Shadow
 	@Final
 	private MinecraftClient client;
@@ -30,11 +32,12 @@ public class InGameHudMixin {
 			method = "renderPortalOverlay(F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
+					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					ordinal = 0
 			),
 			index = 3
 	)
-	private float renderPortalOverlay_opacity(float alpha) {
+	private float renderPortalOverlay(float alpha) {
 		return ScreenFXConfig.portalOpacity;
 	}
 
@@ -59,7 +62,7 @@ public class InGameHudMixin {
 					remap = false
 			)
 	)
-	private void renderSpyglassTexture_opacity(CallbackInfo ci) {
+	private void renderSpyglassOverlay_textureOpacity(CallbackInfo ci) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, ScreenFXConfig.spyglassTextureOpacity);
 	}
 
@@ -67,10 +70,11 @@ public class InGameHudMixin {
 			method = "renderVignetteOverlay(Lnet/minecraft/entity/Entity;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
+					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					ordinal = 1
 			)
 	)
-	private void renderVignetteOverlay_opacity(Args args) {
+	private void renderVignetteOverlay(Args args) {
 		float[] rgbArray = new float[3];
 		try {
 			Color.decode(ScreenFXConfig.vignetteColour).getRGBColorComponents(rgbArray);
@@ -79,14 +83,44 @@ public class InGameHudMixin {
 			rgbArray[1] = 0f;
 			rgbArray[2] = 0f;
 		}
+		opacity = ScreenFXConfig.vignetteOpacity;
 		if (ScreenFXConfig.vignetteMode == vignetteModeEnum.DYNAMIC) {
-			opacity = (float) args.get(0) * ScreenFXConfig.vignetteOpacity;
-		} else if (ScreenFXConfig.vignetteMode == vignetteModeEnum.FIXED) {
-			opacity = ScreenFXConfig.vignetteOpacity;
+			opacity *= MathHelper.clamp(this.vignetteDarkness, 0.0F, 1.0F);
 		}
 		args.set(0, (1f - rgbArray[0]) * opacity);
 		args.set(1, (1f - rgbArray[1]) * opacity);
 		args.set(2, (1f - rgbArray[2]) * opacity);
+	}
+
+	@ModifyArgs(
+			method = "renderVignetteOverlay(Lnet/minecraft/entity/Entity;)V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					ordinal = 0
+			)
+	)
+	private void renderVignetteOverlay_worldBorder(Args args) {
+		if (!ScreenFXConfig.vignetteWorldBorderDisable) {
+			float[] rgbArray = new float[3];
+			try {
+				Color.decode(ScreenFXConfig.vignetteWorldBorderColour).getRGBColorComponents(rgbArray);
+			} catch (NumberFormatException e) {
+				rgbArray[0] = 0f;
+				rgbArray[1] = 1f;
+				rgbArray[2] = 1f;
+			}
+			opacity = ScreenFXConfig.vignetteOpacity;
+			if (ScreenFXConfig.vignetteMode == vignetteModeEnum.DYNAMIC) {
+				float worldBorderStrength = args.get(1);
+				opacity *= worldBorderStrength;
+			}
+			args.set(0, (1f - rgbArray[0]) * opacity);
+			args.set(1, (1f - rgbArray[1]) * opacity);
+			args.set(2, (1f - rgbArray[2]) * opacity);
+		} else {
+			renderVignetteOverlay(args);
+		}
 	}
 
 	@ModifyArg(
@@ -97,7 +131,7 @@ public class InGameHudMixin {
 					ordinal = 0
 			)
 	)
-	private float renderPumpkinBlur_opacity(float opacity) {
+	private float renderPumpkinBlurOverlay(float opacity) {
 		return ScreenFXConfig.pumpkinOpacity;
 	}
 
@@ -109,8 +143,10 @@ public class InGameHudMixin {
 					ordinal = 1
 			)
 	)
-	private float renderPowderSnowOverlay_opacity(float freezingScale) {
-		if (client.player == null) { return 1f; }
+	private float renderPowderSnowOverlay(float freezingScale) {
+		if (client.player == null) {
+			return 1f;
+		}
 		return ScreenFXConfig.powderSnowOpacity * client.player.getFreezingScale();
 	}
 }

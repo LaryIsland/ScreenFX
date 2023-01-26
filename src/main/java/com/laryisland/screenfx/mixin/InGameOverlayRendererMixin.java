@@ -54,7 +54,7 @@ public class InGameOverlayRendererMixin {
 			),
 			index = 3
 	)
-	private static float renderUnderwaterOverlay_opacity(float alpha) {
+	private static float renderUnderwaterOverlay(float alpha) {
 		return ScreenFXConfig.underwaterOpacity;
 	}
 
@@ -65,7 +65,7 @@ public class InGameOverlayRendererMixin {
 					target = "Lnet/minecraft/client/render/VertexConsumer;color(FFFF)Lnet/minecraft/client/render/VertexConsumer;"
 			)
 	)
-	private static void renderInWallOverlay_brightness(Args args) {
+	private static void renderInWallOverlay(Args args) {
 		args.setAll(
 				ScreenFXConfig.inWallBrightness,
 				ScreenFXConfig.inWallBrightness,

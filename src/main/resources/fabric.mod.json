@@ -3,7 +3,7 @@
 	"id": "screenfx",
 	"version": "${version}",
 	"name": "ScreenFX",
-	"description": "Adds fully configurable quality of life changes to various screen effects",
+	"description": "A client-side, resource pack compatible, quality of life fabric mod for changing overlays and screen effects",
 	"authors": [
 		"LaryIsland"
 	],
