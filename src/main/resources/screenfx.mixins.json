@@ -4,6 +4,7 @@
 	"package": "com.laryisland.screenfx.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"client": [
+		"ElderGuardianAppearanceParticleMixin",
 		"GameRendererMixin",
 		"InGameHudMixin",
 		"InGameOverlayRendererMixin"

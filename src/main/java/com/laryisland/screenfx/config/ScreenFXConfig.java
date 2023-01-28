@@ -73,4 +73,19 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static Comment inWallSettings;
 	@Entry(isSlider = true, min = 0f, max = 1f)
 	public static float inWallBrightness = 0.1f;
+
+	@Comment(centered = true)
+	public static Comment elderGuardianSettings;
+	@Entry(isSlider = true, min = 0f, max = 1f)
+	public static float elderGuardianFadeInFadeOutOpacity = 0.05f;
+	@Entry(isSlider = true, min = 0f, max = 1f)
+	public static float elderGuardianOpacity = 0.5f;
+	@Entry(isSlider = true, min = 0f, max = 2f)
+	public static float elderGuardianScale = 1f;
+	@Entry(isSlider = true, min = 1, max = 120)
+	public static int elderGuardianAnimationDuration = 30;
+	@Entry
+	public static boolean elderGuardianFixClipping = false;
+	@Entry
+	public static boolean elderGuardianMiningFatigueHide = false;
 }
