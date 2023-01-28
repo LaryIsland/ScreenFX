@@ -1,5 +1,7 @@
 package com.laryisland.screenfx.mixin;
 
+import static com.laryisland.screenfx.ScreenFX.validColour;
+
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.vignetteModeEnum;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -76,9 +78,9 @@ public class InGameHudMixin {
 	)
 	private void renderVignetteOverlay(Args args) {
 		float[] rgbArray = new float[3];
-		try {
+		if (validColour.matcher(ScreenFXConfig.vignetteColour).matches()) {
 			Color.decode(ScreenFXConfig.vignetteColour).getRGBColorComponents(rgbArray);
-		} catch (NumberFormatException e) {
+		} else {
 			rgbArray[0] = 0f;
 			rgbArray[1] = 0f;
 			rgbArray[2] = 0f;
@@ -103,9 +105,9 @@ public class InGameHudMixin {
 	private void renderVignetteOverlay_worldBorder(Args args) {
 		if (!ScreenFXConfig.vignetteWorldBorderDisable) {
 			float[] rgbArray = new float[3];
-			try {
+			if (validColour.matcher(ScreenFXConfig.vignetteWorldBorderColour).matches()) {
 				Color.decode(ScreenFXConfig.vignetteWorldBorderColour).getRGBColorComponents(rgbArray);
-			} catch (NumberFormatException e) {
+			} else {
 				rgbArray[0] = 0f;
 				rgbArray[1] = 1f;
 				rgbArray[2] = 1f;

@@ -1,5 +1,7 @@
 package com.laryisland.screenfx.mixin;
 
+import static com.laryisland.screenfx.ScreenFX.validColour;
+
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.distortionModeEnum;
 import java.awt.Color;
@@ -17,11 +19,10 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 
-	private float distortionStrength = 1f;
-
 	@Shadow
 	@Final
 	MinecraftClient client;
+	private float distortionStrength = 1f;
 
 	@ModifyArgs(
 			method = "renderNausea(F)V",
@@ -33,9 +34,9 @@ public class GameRendererMixin {
 	)
 	private void renderDistortionOverlay(Args args) {
 		float[] rgbArray = new float[3];
-		try {
+		if (validColour.matcher(ScreenFXConfig.distortionColour).matches()) {
 			Color.decode(ScreenFXConfig.distortionColour).getRGBColorComponents(rgbArray);
-		} catch (NumberFormatException e) {
+		} else {
 			rgbArray[0] = args.get(0);
 			rgbArray[1] = args.get(1);
 			rgbArray[2] = args.get(2);
