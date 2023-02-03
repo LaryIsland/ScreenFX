@@ -88,4 +88,9 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static boolean elderGuardianFixClipping = false;
 	@Entry
 	public static boolean elderGuardianMiningFatigueHide = false;
+
+	@Comment(centered = true)
+	public static Comment totemOfUndyingSettings;
+	@Entry
+	public static boolean totemOfUndyingDisable = false;
 }

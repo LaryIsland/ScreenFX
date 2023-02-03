@@ -12,7 +12,7 @@
 ### ScreenFX is a client-side, resource pack compatible, quality of life fabric mod for changing overlays and screen effects
 </div>
 
-## ✅ Features
+## [✅ Features](https://laryisland.com/screenfx.html)
 - First person fire
   - Opacity
   - Height

@@ -12,8 +12,10 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(GameRenderer.class)
@@ -22,6 +24,8 @@ public class GameRendererMixin {
 	@Shadow
 	@Final
 	MinecraftClient client;
+	@Shadow
+	private int floatingItemTimeLeft;
 	private float distortionStrength = 1f;
 
 	@ModifyArgs(
@@ -62,5 +66,15 @@ public class GameRendererMixin {
 	)
 	private double fixDistortionGrowth(double d) {
 		return MathHelper.lerp(distortionStrength, 2.0, 1.0);
+	}
+
+	@Inject(
+			method = "renderFloatingItem(IIF)V",
+			at = @At("HEAD")
+	)
+	private void renderFloatingItem_disable(CallbackInfo ci) {
+		if (ScreenFXConfig.totemOfUndyingDisable) {
+			this.floatingItemTimeLeft = 0;
+		}
 	}
 }
