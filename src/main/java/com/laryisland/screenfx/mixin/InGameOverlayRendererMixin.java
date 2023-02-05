@@ -38,11 +38,11 @@ public class InGameOverlayRendererMixin {
 			method = "renderFireOverlay(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/util/math/MatrixStack;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V"
+					target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V"
 			),
 			index = 1
 	)
-	private static float renderFireOverlay_translate(float y) {
+	private static double renderFireOverlay_translate(double y) {
 		return ScreenFXConfig.firePosition;
 	}
 
