@@ -6,10 +6,8 @@ import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.vignetteModeEnum;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.awt.Color;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.util.math.MathHelper;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,12 +24,9 @@ public class InGameHudMixin {
 	private static float opacity = 1f;
 	@Shadow
 	public float vignetteDarkness;
-	@Shadow
-	@Final
-	private MinecraftClient client;
 
 	@ModifyArg(
-			method = "renderPortalOverlay(F)V",
+			method = "renderPortalOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
@@ -44,23 +39,26 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "renderSpyglassOverlay(F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/render/VertexConsumer;color(IIII)Lnet/minecraft/client/render/VertexConsumer;"
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;fill(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"
 			),
-			index = 3
+			index = 6
 	)
-	private int renderSpyglassOverlay_opacity(int alpha) {
-		return ScreenFXConfig.spyglassOverlayOpacity;
+	private int renderSpyglassOverlay_opacity(int color) {
+		if (ScreenFXConfig.spyglassOverlayColour.length() == 7 && validColour.matcher(ScreenFXConfig.spyglassOverlayColour).matches()) {
+			return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity) + ScreenFXConfig.spyglassOverlayColour.substring(1),16).intValue();
+		}
+		return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity) + "000000",16).intValue();
 	}
 
 	@Inject(
-			method = "renderSpyglassOverlay(F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;defaultBlendFunc()V",
-					shift = Shift.AFTER,
+					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V",
+					shift = Shift.BEFORE,
 					remap = false
 			)
 	)
@@ -68,8 +66,21 @@ public class InGameHudMixin {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, ScreenFXConfig.spyglassTextureOpacity);
 	}
 
+	@Inject(
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIFFIIII)V",
+					shift = Shift.AFTER,
+					remap = false
+			)
+	)
+	private void renderSpyglassOverlay_textureOpacityReset(CallbackInfo ci) {
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
 	@ModifyArgs(
-			method = "renderVignetteOverlay(Lnet/minecraft/entity/Entity;)V",
+			method = "renderVignetteOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/entity/Entity;)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
@@ -95,7 +106,7 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArgs(
-			method = "renderVignetteOverlay(Lnet/minecraft/entity/Entity;)V",
+			method = "renderVignetteOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/entity/Entity;)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
@@ -129,7 +140,7 @@ public class InGameHudMixin {
 			method = "render(Lnet/minecraft/client/util/math/MatrixStack;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/util/Identifier;F)V",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Identifier;F)V",
 					ordinal = 0
 			)
 	)
@@ -141,14 +152,11 @@ public class InGameHudMixin {
 			method = "render(Lnet/minecraft/client/util/math/MatrixStack;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/util/Identifier;F)V",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Identifier;F)V",
 					ordinal = 1
 			)
 	)
 	private float renderPowderSnowOverlay(float freezingScale) {
-		if (client.player == null) {
-			return 1f;
-		}
-		return ScreenFXConfig.powderSnowOpacity * client.player.getFreezingScale();
+		return ScreenFXConfig.powderSnowOpacity * freezingScale;
 	}
 }
