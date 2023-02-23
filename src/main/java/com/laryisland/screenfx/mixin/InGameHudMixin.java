@@ -6,10 +6,8 @@ import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.vignetteModeEnum;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.awt.Color;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.util.math.MathHelper;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,9 +24,6 @@ public class InGameHudMixin {
 	private static float opacity = 1f;
 	@Shadow
 	public float vignetteDarkness;
-	@Shadow
-	@Final
-	private MinecraftClient client;
 
 	@ModifyArg(
 			method = "renderPortalOverlay(F)V",
@@ -43,29 +38,44 @@ public class InGameHudMixin {
 		return ScreenFXConfig.portalOpacity;
 	}
 
-	@ModifyArg(
+	@ModifyArgs(
 			method = "renderSpyglassOverlay(F)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/render/VertexConsumer;color(IIII)Lnet/minecraft/client/render/VertexConsumer;"
-			),
-			index = 3
+			)
 	)
-	private int renderSpyglassOverlay_opacity(int alpha) {
-		return ScreenFXConfig.spyglassOverlayOpacity;
+	private void renderSpyglassOverlay_opacity(Args args) {
+		if (validColour.matcher(ScreenFXConfig.spyglassOverlayColour).matches()) {
+			var colour = Color.decode(ScreenFXConfig.spyglassOverlayColour);
+			args.setAll(colour.getRed(), colour.getGreen(), colour.getBlue(), ScreenFXConfig.spyglassOverlayOpacity);
+		} else {
+			args.set(3, ScreenFXConfig.spyglassOverlayOpacity);
+		}
 	}
 
 	@Inject(
 			method = "renderSpyglassOverlay(F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;defaultBlendFunc()V",
-					shift = Shift.AFTER,
-					remap = false
+					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V",
+					shift = Shift.BEFORE
 			)
 	)
 	private void renderSpyglassOverlay_textureOpacity(CallbackInfo ci) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, ScreenFXConfig.spyglassTextureOpacity);
+	}
+
+	@Inject(
+			method = "renderSpyglassOverlay(F)V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/render/Tessellator;draw()V",
+					shift = Shift.AFTER
+			)
+	)
+	private void renderSpyglassOverlay_textureOpacityReset(CallbackInfo ci) {
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@ModifyArgs(
@@ -146,9 +156,6 @@ public class InGameHudMixin {
 			)
 	)
 	private float renderPowderSnowOverlay(float freezingScale) {
-		if (client.player == null) {
-			return 1f;
-		}
-		return ScreenFXConfig.powderSnowOpacity * client.player.getFreezingScale();
+		return ScreenFXConfig.powderSnowOpacity * freezingScale;
 	}
 }
