@@ -31,6 +31,8 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static float spyglassTextureOpacity = 1f;
 	@Entry(isSlider = true, min = 0, max = 255)
 	public static int spyglassOverlayOpacity = 255;
+	@Entry(isColor = true)
+	public static String spyglassOverlayColour = "#000000";
 
 	@Comment(centered = true)
 	public static Comment vignetteSettings;
