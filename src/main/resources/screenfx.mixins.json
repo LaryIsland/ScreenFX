@@ -6,6 +6,7 @@
 	"client": [
 		"ElderGuardianAppearanceParticleMixin",
 		"GameRendererMixin",
+		"HeldItemRendererMixin",
 		"InGameHudMixin",
 		"InGameOverlayRendererMixin"
 	],

@@ -1,8 +1,8 @@
 package com.laryisland.screenfx.config;
 
-import eu.midnightdust.lib.config.MidnightConfig;
-
 public class ScreenFXConfig extends MidnightConfig {
+
+	public enum effectModeEnum { FIXED, DYNAMIC }
 
 	@Comment(centered = true)
 	public static Comment fireSettings;
@@ -36,9 +36,8 @@ public class ScreenFXConfig extends MidnightConfig {
 
 	@Comment(centered = true)
 	public static Comment vignetteSettings;
-	public enum vignetteModeEnum { FIXED, DYNAMIC }
 	@Entry
-	public static vignetteModeEnum vignetteMode = vignetteModeEnum.DYNAMIC;
+	public static effectModeEnum vignetteMode = effectModeEnum.DYNAMIC;
 	@Entry(isColor = true)
 	public static String vignetteColour = "#000000";
 	@Entry(isSlider = true, min = 0f, max = 1f)
@@ -48,12 +47,10 @@ public class ScreenFXConfig extends MidnightConfig {
 	@Entry
 	public static boolean vignetteWorldBorderDisable = false;
 
-
 	@Comment(centered = true)
 	public static Comment distortionSettings;
-	public enum distortionModeEnum { FIXED, DYNAMIC }
 	@Entry
-	public static distortionModeEnum distortionMode = distortionModeEnum.DYNAMIC;
+	public static effectModeEnum distortionMode = effectModeEnum.DYNAMIC;
 	@Entry(isColor = true)
 	public static String distortionColour = "#336633";
 	@Entry(isSlider = true, min = 0f, max = 1f)
@@ -95,4 +92,25 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static Comment totemOfUndyingSettings;
 	@Entry
 	public static boolean totemOfUndyingDisable = false;
+
+	@Comment(centered = true)
+	public static Comment heldItemSettings;
+	@Entry(isSlider = true, min = 0f, max = 360f, precision = 1)
+	public static float heldItemRotationAxisX = 0f;
+	@Entry(isSlider = true, min = 0f, max = 360f, precision = 1)
+	public static float heldItemRotationAxisY = 0f;
+	@Entry(isSlider = true, min = 0f, max = 360f, precision = 1)
+	public static float heldItemRotationAxisZ = 0f;
+	@Entry(isSlider = true, min = 0f, max = 3f, precision = 10)
+	public static float heldItemScaleAxisX = 0f;
+	@Entry(isSlider = true, min = 0f, max = 3f, precision = 10)
+	public static float heldItemScaleAxisY = 0f;
+	@Entry(isSlider = true, min = 0f, max = 3f, precision = 10)
+	public static float heldItemScaleAxisZ = 0f;
+	@Entry(isSlider = true, min = 0f, max = 1f, precision = 100)
+	public static float heldItemTranslationAxisX = 0f;
+	@Entry(isSlider = true, min = 0f, max = 1f, precision = 100)
+	public static float heldItemTranslationAxisY = 0f;
+	@Entry(isSlider = true, min = 0f, max = 1f, precision = 100)
+	public static float heldItemTranslationAxisZ = 0f;
 }

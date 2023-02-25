@@ -1,7 +1,7 @@
 package com.laryisland.screenfx;
 
+import com.laryisland.screenfx.config.MidnightConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig;
-import eu.midnightdust.lib.config.MidnightConfig;
 import java.util.regex.Pattern;
 import net.fabricmc.api.ClientModInitializer;
 

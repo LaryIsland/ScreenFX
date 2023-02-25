@@ -3,7 +3,7 @@ package com.laryisland.screenfx.mixin;
 import static com.laryisland.screenfx.ScreenFX.validColour;
 
 import com.laryisland.screenfx.config.ScreenFXConfig;
-import com.laryisland.screenfx.config.ScreenFXConfig.vignetteModeEnum;
+import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.awt.Color;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -47,10 +47,12 @@ public class InGameHudMixin {
 			index = 6
 	)
 	private int renderSpyglassOverlay_opacity(int color) {
-		if (ScreenFXConfig.spyglassOverlayColour.length() == 7 && validColour.matcher(ScreenFXConfig.spyglassOverlayColour).matches()) {
-			return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity) + ScreenFXConfig.spyglassOverlayColour.substring(1),16).intValue();
+		if (ScreenFXConfig.spyglassOverlayColour.length() == 7
+				&& validColour.matcher(ScreenFXConfig.spyglassOverlayColour).matches()) {
+			return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity)
+					+ ScreenFXConfig.spyglassOverlayColour.substring(1), 16).intValue();
 		}
-		return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity) + "000000",16).intValue();
+		return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity) + "000000", 16).intValue();
 	}
 
 	@Inject(
@@ -97,7 +99,7 @@ public class InGameHudMixin {
 			rgbArray[2] = 0f;
 		}
 		opacity = ScreenFXConfig.vignetteOpacity;
-		if (ScreenFXConfig.vignetteMode == vignetteModeEnum.DYNAMIC) {
+		if (ScreenFXConfig.vignetteMode == effectModeEnum.DYNAMIC) {
 			opacity *= MathHelper.clamp(this.vignetteDarkness, 0.0F, 1.0F);
 		}
 		args.set(0, (1f - rgbArray[0]) * opacity);
@@ -124,7 +126,7 @@ public class InGameHudMixin {
 				rgbArray[2] = 1f;
 			}
 			opacity = ScreenFXConfig.vignetteOpacity;
-			if (ScreenFXConfig.vignetteMode == vignetteModeEnum.DYNAMIC) {
+			if (ScreenFXConfig.vignetteMode == effectModeEnum.DYNAMIC) {
 				float worldBorderStrength = args.get(1);
 				opacity *= worldBorderStrength;
 			}
