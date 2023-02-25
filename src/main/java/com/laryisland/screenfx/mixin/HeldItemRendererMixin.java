@@ -25,15 +25,29 @@ public class HeldItemRendererMixin {
 					target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
 					shift = Shift.BEFORE
 			),
-			locals = LocalCapture.CAPTURE_FAILHARD
+			locals = LocalCapture.CAPTURE_FAILSOFT
 	)
 	private void renderHeldItem_matrixManipulation(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand,
 			float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices,
 			VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(ScreenFXConfig.heldItemRotationAxisX));
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ScreenFXConfig.heldItemRotationAxisY));
-		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(ScreenFXConfig.heldItemRotationAxisZ));
-		matrices.scale(ScreenFXConfig.heldItemScaleAxisX, ScreenFXConfig.heldItemScaleAxisY, ScreenFXConfig.heldItemScaleAxisZ);
-		matrices.translate(ScreenFXConfig.heldItemTranslationAxisX, ScreenFXConfig.heldItemTranslationAxisY, ScreenFXConfig.heldItemTranslationAxisZ);
+		if (hand == Hand.MAIN_HAND) {
+			matrices.translate(ScreenFXConfig.heldItemMainHandTranslationAxisX, ScreenFXConfig.heldItemMainHandTranslationAxisY, ScreenFXConfig.heldItemMainHandTranslationAxisZ);
+			matrices.scale(ScreenFXConfig.heldItemMainHandScale, ScreenFXConfig.heldItemMainHandScale, ScreenFXConfig.heldItemMainHandScale);
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(ScreenFXConfig.heldItemMainHandRotationAxisX));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ScreenFXConfig.heldItemMainHandRotationAxisY));
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(ScreenFXConfig.heldItemMainHandRotationAxisZ));
+		} else if (ScreenFXConfig.heldItemOffhandMirrorsMainHand) {
+			matrices.translate(-ScreenFXConfig.heldItemMainHandTranslationAxisX, ScreenFXConfig.heldItemMainHandTranslationAxisY, ScreenFXConfig.heldItemMainHandTranslationAxisZ);
+			matrices.scale(ScreenFXConfig.heldItemMainHandScale, ScreenFXConfig.heldItemMainHandScale, ScreenFXConfig.heldItemMainHandScale);
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(ScreenFXConfig.heldItemMainHandRotationAxisX));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-ScreenFXConfig.heldItemMainHandRotationAxisY));
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-ScreenFXConfig.heldItemMainHandRotationAxisZ));
+		} else {
+			matrices.translate(ScreenFXConfig.heldItemOffhandTranslationAxisX, ScreenFXConfig.heldItemOffhandTranslationAxisY, ScreenFXConfig.heldItemOffhandTranslationAxisZ);
+			matrices.scale(ScreenFXConfig.heldItemOffhandScale, ScreenFXConfig.heldItemOffhandScale, ScreenFXConfig.heldItemOffhandScale);
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(ScreenFXConfig.heldItemOffhandRotationAxisX));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ScreenFXConfig.heldItemOffhandRotationAxisY));
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(ScreenFXConfig.heldItemOffhandRotationAxisZ));
+		}
 	}
 }

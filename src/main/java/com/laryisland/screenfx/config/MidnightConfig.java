@@ -296,13 +296,12 @@ public abstract class MidnightConfig {
 				for (ButtonEntry entry : this.list.children()) {
 					if (entry.buttons != null && entry.buttons.size() > 1
 							&& entry.buttons.get(1) instanceof ButtonWidget button) {
-						if (button.active != (button.active = !Objects.equals(entry.info.value.toString(), entry.info.defaultValue.toString()))) {
-							if (button.active) {
-								button.setMessage(button.getMessage().copy().formatted(Formatting.WHITE));
-							} else {
-								button.setMessage(button.getMessage().copy().formatted(Formatting.GRAY));
-							}
+						if (!Objects.equals(entry.info.value.toString(), entry.info.defaultValue.toString())) {
+							button.setMessage(button.getMessage().copy().formatted(Formatting.WHITE));
+						} else {
+							button.setMessage(button.getMessage().copy().formatted(Formatting.GRAY));
 						}
+						button.active = !Objects.equals(entry.info.value.toString(), entry.info.defaultValue.toString());
 					}
 				}
 			}

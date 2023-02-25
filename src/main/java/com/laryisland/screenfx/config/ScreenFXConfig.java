@@ -95,22 +95,36 @@ public class ScreenFXConfig extends MidnightConfig {
 
 	@Comment(centered = true)
 	public static Comment heldItemSettings;
-	@Entry(isSlider = true, min = 0f, max = 360f, precision = 1)
-	public static float heldItemRotationAxisX = 0f;
-	@Entry(isSlider = true, min = 0f, max = 360f, precision = 1)
-	public static float heldItemRotationAxisY = 0f;
-	@Entry(isSlider = true, min = 0f, max = 360f, precision = 1)
-	public static float heldItemRotationAxisZ = 0f;
-	@Entry(isSlider = true, min = 0f, max = 3f, precision = 10)
-	public static float heldItemScaleAxisX = 0f;
-	@Entry(isSlider = true, min = 0f, max = 3f, precision = 10)
-	public static float heldItemScaleAxisY = 0f;
-	@Entry(isSlider = true, min = 0f, max = 3f, precision = 10)
-	public static float heldItemScaleAxisZ = 0f;
-	@Entry(isSlider = true, min = 0f, max = 1f, precision = 100)
-	public static float heldItemTranslationAxisX = 0f;
-	@Entry(isSlider = true, min = 0f, max = 1f, precision = 100)
-	public static float heldItemTranslationAxisY = 0f;
-	@Entry(isSlider = true, min = 0f, max = 1f, precision = 100)
-	public static float heldItemTranslationAxisZ = 0f;
+	@Entry(isSlider = true, min = -180f, max = 180f, precision = 1)
+	public static float heldItemMainHandRotationAxisX = 0f;
+	@Entry(isSlider = true, min = -180f, max = 180f, precision = 1)
+	public static float heldItemMainHandRotationAxisY = 0f;
+	@Entry(isSlider = true, min = -180f, max = 180f, precision = 1)
+	public static float heldItemMainHandRotationAxisZ = 0f;
+	@Entry(isSlider = true, min = 0f, max = 2f)
+	public static float heldItemMainHandScale = 1f;
+	@Entry(isSlider = true, min = -1f, max = 1f)
+	public static float heldItemMainHandTranslationAxisX = 0f;
+	@Entry(isSlider = true, min = -1f, max = 1f)
+	public static float heldItemMainHandTranslationAxisY = 0f;
+	@Entry(isSlider = true, min = -1f, max = 1f)
+	public static float heldItemMainHandTranslationAxisZ = 0f;
+
+	@Entry
+	public static boolean heldItemOffhandMirrorsMainHand = true;
+	
+	@Entry(isSlider = true, min = -180f, max = 180f, precision = 1)
+	public static float heldItemOffhandRotationAxisX = 0f;
+	@Entry(isSlider = true, min = -180f, max = 180f, precision = 1)
+	public static float heldItemOffhandRotationAxisY = 0f;
+	@Entry(isSlider = true, min = -180f, max = 180f, precision = 1)
+	public static float heldItemOffhandRotationAxisZ = 0f;
+	@Entry(isSlider = true, min = 0f, max = 2f)
+	public static float heldItemOffhandScale = 1f;
+	@Entry(isSlider = true, min = -1f, max = 1f)
+	public static float heldItemOffhandTranslationAxisX = 0f;
+	@Entry(isSlider = true, min = -1f, max = 1f)
+	public static float heldItemOffhandTranslationAxisY = 0f;
+	@Entry(isSlider = true, min = -1f, max = 1f)
+	public static float heldItemOffhandTranslationAxisZ = 0f;
 }
