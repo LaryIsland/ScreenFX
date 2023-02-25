@@ -40,8 +40,6 @@
 	"screenfx.midnightconfig.vignetteSettings": "Vignette Settings",
 	"screenfx.midnightconfig.vignetteWorldBorderColour": "World Border Color",
 	"screenfx.midnightconfig.vignetteWorldBorderDisable": "Disable world border override",
-	"screenfx.midnightconfig.enum.distortionModeEnum.DYNAMIC": "Dynamic",
-	"screenfx.midnightconfig.enum.distortionModeEnum.FIXED": "Fixed",
-	"screenfx.midnightconfig.enum.vignetteModeEnum.DYNAMIC": "Dynamic",
-	"screenfx.midnightconfig.enum.vignetteModeEnum.FIXED": "Fixed"
+	"screenfx.midnightconfig.enum.effectModeEnum.DYNAMIC": "Dynamic",
+	"screenfx.midnightconfig.enum.effectModeEnum.FIXED": "Fixed"
 }

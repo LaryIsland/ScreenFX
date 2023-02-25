@@ -3,7 +3,7 @@ package com.laryisland.screenfx.mixin;
 import static com.laryisland.screenfx.ScreenFX.validColour;
 
 import com.laryisland.screenfx.config.ScreenFXConfig;
-import com.laryisland.screenfx.config.ScreenFXConfig.distortionModeEnum;
+import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import java.awt.Color;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
@@ -45,13 +45,13 @@ public class GameRendererMixin {
 			rgbArray[1] = args.get(1);
 			rgbArray[2] = args.get(2);
 		}
-		if (ScreenFXConfig.distortionMode == distortionModeEnum.DYNAMIC) {
+		if (ScreenFXConfig.distortionMode == effectModeEnum.DYNAMIC) {
 			distortionStrength = (1f - client.options.getDistortionEffectScale().getValue().floatValue())
 					* ScreenFXConfig.distortionStrength;
 			args.set(0, rgbArray[0] * distortionStrength * ScreenFXConfig.distortionOpacity);
 			args.set(1, rgbArray[1] * distortionStrength * ScreenFXConfig.distortionOpacity);
 			args.set(2, rgbArray[2] * distortionStrength * ScreenFXConfig.distortionOpacity);
-		} else if (ScreenFXConfig.distortionMode == distortionModeEnum.FIXED) {
+		} else if (ScreenFXConfig.distortionMode == effectModeEnum.FIXED) {
 			distortionStrength = ScreenFXConfig.distortionStrength;
 			args.set(0, rgbArray[0] * ScreenFXConfig.distortionOpacity);
 			args.set(1, rgbArray[1] * ScreenFXConfig.distortionOpacity);

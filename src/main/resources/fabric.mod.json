@@ -18,6 +18,9 @@
 	"entrypoints": {
 		"client": [
 			"com.laryisland.screenfx.ScreenFX"
+		],
+		"modmenu": [
+			"com.laryisland.screenfx.config.ModMenuEntry"
 		]
 	},
 	"mixins": [
