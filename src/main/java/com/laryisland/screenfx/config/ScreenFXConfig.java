@@ -1,7 +1,5 @@
 package com.laryisland.screenfx.config;
 
-import eu.midnightdust.lib.config.MidnightConfig;
-
 public class ScreenFXConfig extends MidnightConfig {
 
 	@Comment(centered = true)

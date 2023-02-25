@@ -23,7 +23,7 @@ public class GameRendererMixin {
 
 	@Shadow
 	@Final
-	MinecraftClient client;
+	private MinecraftClient client;
 	@Shadow
 	private int floatingItemTimeLeft;
 	private float distortionStrength = 1f;
@@ -46,7 +46,7 @@ public class GameRendererMixin {
 			rgbArray[2] = args.get(2);
 		}
 		if (ScreenFXConfig.distortionMode == distortionModeEnum.DYNAMIC) {
-			distortionStrength = (1f - client.options.getDistortionEffectScale().getValue().floatValue())
+			distortionStrength = (1f - client.options.distortionEffectScale)
 					* ScreenFXConfig.distortionStrength;
 			args.set(0, rgbArray[0] * distortionStrength * ScreenFXConfig.distortionOpacity);
 			args.set(1, rgbArray[1] * distortionStrength * ScreenFXConfig.distortionOpacity);

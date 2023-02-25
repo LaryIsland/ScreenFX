@@ -18,6 +18,9 @@
 	"entrypoints": {
 		"client": [
 			"com.laryisland.screenfx.ScreenFX"
+		],
+		"modmenu": [
+			"com.laryisland.screenfx.config.ModMenuEntry"
 		]
 	},
 	"mixins": [
@@ -25,7 +28,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.14.11",
-		"minecraft": "~1.19",
+		"minecraft": "~1.18",
 		"java": ">=17",
 		"fabric": "*"
 	}
