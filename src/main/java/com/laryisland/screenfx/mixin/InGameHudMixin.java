@@ -60,8 +60,7 @@ public class InGameHudMixin {
 			at = @At(
 					value = "INVOKE",
 					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V",
-					shift = Shift.BEFORE,
-					remap = false
+					shift = Shift.BEFORE
 			)
 	)
 	private void renderSpyglassOverlay_textureOpacity(CallbackInfo ci) {
@@ -73,8 +72,7 @@ public class InGameHudMixin {
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIFFIIII)V",
-					shift = Shift.AFTER,
-					remap = false
+					shift = Shift.AFTER
 			)
 	)
 	private void renderSpyglassOverlay_textureOpacityReset(CallbackInfo ci) {
