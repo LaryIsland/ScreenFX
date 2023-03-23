@@ -1,6 +1,6 @@
 {
-	"screenfx.midnightconfig.distortionColour": "Distortion Colour",
-	"screenfx.midnightconfig.spyglassOverlayColour": "Spyglass Overlay Colour",
-	"screenfx.midnightconfig.vignetteColour": "Vignette Colour",
+	"screenfx.midnightconfig.distortionColour": "Colour",
+	"screenfx.midnightconfig.spyglassOverlayColour": "Overlay Colour",
+	"screenfx.midnightconfig.vignetteColour": "Colour",
 	"screenfx.midnightconfig.vignetteWorldBorderColour": "World Border Colour"
 }
