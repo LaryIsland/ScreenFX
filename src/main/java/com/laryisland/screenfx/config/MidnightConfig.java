@@ -50,6 +50,7 @@ public abstract class MidnightConfig {
 	private static final Pattern HEXADECIMAL_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
 
 	private static final List<EntryInfo> entries = new ArrayList<>();
+	private static final Map<String, List<EntryInfo>> mapEntries = new LinkedHashMap<>();
 
 	protected static class EntryInfo {
 		Field field;
@@ -66,12 +67,41 @@ public abstract class MidnightConfig {
 		int index;
 		ClickableWidget colorButton;
 		Tab tab;
+		String map;
+		int mapPosition;
 	}
 
 	public static final Map<String,Class<?>> configClass = new HashMap<>();
 	private static Path path;
 
 	private static final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).excludeFieldsWithModifiers(Modifier.PRIVATE).addSerializationExclusionStrategy(new HiddenAnnotationExclusionStrategy()).setPrettyPrinting().create();
+
+	private static List<?> addDefaultMapEntry(EntryInfo info) {
+		List<Object> valueList = new ArrayList<>(mapEntries.get(info.map).size() - 1);
+		int counter = 1;
+		for (EntryInfo mapInfo : mapEntries.get(info.map)) {
+			if (mapInfo.mapPosition != 0) {
+				valueList.add(mapEntries.get(info.map).get(counter).defaultValue);
+				counter += 1;
+			}
+		}
+		((Map<String, List<?>>) mapEntries.get(info.map).get(0).value).put("", valueList);
+		return valueList;
+	}
+
+	private static void updateMapPositionEntries(EntryInfo info) {
+		List<?> valueList = ((Map<String, List<?>>) info.value).get(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index));
+		if (valueList.size() > 0) {
+			int counter = 0;
+			for (EntryInfo mapInfo : mapEntries.get(info.map)) {
+				if (mapInfo.mapPosition != 0) {
+					mapInfo.value = valueList.get(counter);
+					mapInfo.tempValue = mapInfo.value.toString();
+					counter += 1;
+				}
+			}
+		}
+	}
 
 	public static void init(String modid, Class<?> config) {
 		path = FabricLoader.getInstance().getConfigDir().resolve(modid + ".json");
@@ -105,13 +135,23 @@ public abstract class MidnightConfig {
 		info.width = e != null ? e.width() : 0;
 		info.field = field;
 		info.id = modid;
+		info.map = e != null ? e.map() : "";
+		info.mapPosition = e != null ? e.mapPosition() : -1;
 
 		if (e != null) {
+			if (info.mapPosition != -1) {
+				if (!mapEntries.containsKey(info.map)) {
+					mapEntries.put(info.map, new ArrayList<>());
+				}
+				mapEntries.get(info.map).add(info.mapPosition, info);
+			}
 			if (!e.name().equals("")) info.name = Text.translatable(e.name());
 			if (type == int.class) textField(info, Integer::parseInt, INTEGER_ONLY, (int) e.min(), (int) e.max(), true);
 			else if (type == float.class) textField(info, Float::parseFloat, DECIMAL_ONLY, (float) e.min(), (float) e.max(), false);
 			else if (type == double.class) textField(info, Double::parseDouble, DECIMAL_ONLY, e.min(), e.max(), false);
 			else if (type == String.class || type == List.class) {
+				textField(info, String::length, null, Math.min(e.min(), 0), Math.max(e.max(), 1), true);
+			} else if (type == Map.class) {
 				textField(info, String::length, null, Math.min(e.min(), 0), Math.max(e.max(), 1), true);
 			} else if (type == boolean.class) {
 				Function<Object, Text> func = value -> Text.translatable((Boolean) value ? "gui.yes" : "gui.no").formatted((Boolean) value ? Formatting.GREEN : Formatting.RED);
@@ -121,7 +161,7 @@ public abstract class MidnightConfig {
 				}, func);
 			} else if (type.isEnum()) {
 				List<?> values = Arrays.asList(field.getType().getEnumConstants());
-				Function<Object, Text> func = value -> Text.translatable(modid + ".midnightconfig." + "enum." + type.getSimpleName() + "." + info.value.toString());
+				Function<Object, Text> func = value -> Text.translatable(modid + ".enum." + type.getSimpleName() + "." + info.value.toString());
 				info.widget = new AbstractMap.SimpleEntry<ButtonWidget.PressAction, Function<Object, Text>>(button -> {
 					int index = values.indexOf(info.value) + 1;
 					info.value = values.get(index >= values.size() ? 0 : index);
@@ -154,12 +194,28 @@ public abstract class MidnightConfig {
 			info.inLimits = inLimits;
 			b.active = entries.stream().allMatch(e -> e.inLimits);
 
-			if (inLimits && info.field.getType() != List.class)
-				info.value = isNumber? value : s;
-			else if (inLimits) {
+			if (inLimits && info.field.getType() == List.class) {
 				if (((List<String>) info.value).size() == info.index) ((List<String>) info.value).add("");
 				((List<String>) info.value).set(info.index, Arrays.stream(info.tempValue.replace("[", "").replace("]", "").split(", ")).toList().get(0));
 			}
+			else if (inLimits && info.field.getType() == Map.class) {
+				List<?> valueList;
+				if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).size() != 0) {
+					valueList = ((Map<String, List<?>>) info.value).get(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index));
+				}
+				else {
+					valueList = addDefaultMapEntry(info);
+				}
+				((Map<String, ?>) info.value).remove(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index));
+				if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).containsKey(info.tempValue)) {
+					((Map<String, List<?>>) info.value).put(info.tempValue + "_", valueList);
+				}
+				else {
+					((Map<String, List<?>>) info.value).put(info.tempValue, valueList);
+				}
+			}
+			else if (inLimits)
+				info.value = isNumber? value : s;
 
 			if (info.field.getAnnotation(Entry.class).isColor()) {
 				if (!s.contains("#")) s = '#' + s;
@@ -188,10 +244,10 @@ public abstract class MidnightConfig {
 	@Environment(EnvType.CLIENT)
 	public static class MidnightConfigScreen extends Screen {
 		protected MidnightConfigScreen(Screen parent, String modid) {
-			super(Text.translatable(modid + ".midnightconfig." + "title"));
+			super(Text.translatable(modid + ".title"));
 			this.parent = parent;
 			this.modid = modid;
-			this.translationPrefix = modid + ".midnightconfig.";
+			this.translationPrefix = modid + ".";
 		}
 		public final String translationPrefix;
 		public final Screen parent;
@@ -315,6 +371,24 @@ public abstract class MidnightConfig {
 						this.refresh();
 					})).dimensions(width - 205, 0, 40, 20).build();
 
+					if (info.mapPosition > 0) {
+						EntryInfo relevantMapEntry = mapEntries.get(info.map).get(0);
+						resetButton = ButtonWidget.builder(Text.literal("Reset").formatted(Formatting.GRAY), (button -> {
+							info.value = info.defaultValue;
+							info.tempValue = info.defaultValue.toString();
+							info.index = 0;
+							if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).size() == 0) {
+								addDefaultMapEntry(info);
+							}
+							((Map<String, List<Object>>) relevantMapEntry.value)
+									.get(((Map<String, ?>) relevantMapEntry.value).keySet().stream().toList().get(relevantMapEntry.index))
+									.set(info.mapPosition - 1, info.defaultValue);
+							this.reload = true;
+							this.refresh();
+							this.reload = false;
+						})).dimensions(width - 205, 0, 40, 20).build();
+					}
+
 					if (info.widget instanceof Map.Entry) {
 						Map.Entry<ButtonWidget.PressAction, Function<Object, Text>> widget = (Map.Entry<ButtonWidget.PressAction, Function<Object, Text>>) info.widget;
 						if (info.field.getType().isEnum())
@@ -335,11 +409,49 @@ public abstract class MidnightConfig {
 							info.index = info.index + 1;
 							if (info.index > ((List<String>) info.value).size()) info.index = 0;
 							this.reload = true;
-							refresh();
+							this.refresh();
 							this.reload = false;
 						})).dimensions(width - 185, 0, 20, 20).build();
 						widget.setTooltip(getTooltip(info));
 						this.list.addButton(List.of(widget, resetButton, cycleButton), name, info);
+					} else if (info.field.getType() == Map.class) {
+						ButtonWidget deleteButton = ButtonWidget.builder(Text.literal("Delete").formatted(Formatting.GRAY), (button -> {
+							((Map<String, ?>) info.value).remove(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index));
+							info.tempValue = info.defaultValue.toString();
+							info.index = Math.max(info.index - 1, 0);
+							if (((Map<String, ?>) info.value).size() > 0) {
+								updateMapPositionEntries(info);
+							}
+							this.reload = true;
+							this.refresh();
+							this.reload = false;
+						})).dimensions(width - 205, 0, 40, 20).build();
+						if (!reload) info.index = 0;
+						TextFieldWidget widget = new TextFieldWidget(textRenderer, width - 160, 0, 150, 20, Text.empty());
+						widget.setMaxLength(info.width);
+						if (info.index < ((Map<String, ?>) info.value).size())
+							widget.setText((String.valueOf(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index))));
+						Predicate<String> processor = ((BiFunction<TextFieldWidget, ButtonWidget, Predicate<String>>) info.widget).apply(widget, done);
+						widget.setTextPredicate(processor);
+						deleteButton.setWidth(20);
+						deleteButton.setMessage(Text.literal("D").formatted(Formatting.GRAY));
+						ButtonWidget cycleButton = ButtonWidget.builder(Text.literal(String.valueOf(info.index)).formatted(Formatting.GOLD), (button -> {
+							info.index += 1;
+							if (info.index == ((Map<String, ?>) info.value).size() && !((Map<String, ?>) info.value).get(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index - 1)).equals("item_name")) {
+								addDefaultMapEntry(info);
+							}
+							if (info.index >= ((Map<String, ?>) info.value).size()) {
+								info.index = 0;
+							}
+							if (((Map<String, ?>) info.value).size() != 0) {
+								updateMapPositionEntries(info);
+							}
+							this.reload = true;
+							this.refresh();
+							this.reload = false;
+						})).dimensions(width - 185, 0, 20, 20).build();
+						widget.setTooltip(getTooltip(info));
+						this.list.addButton(List.of(widget, deleteButton, cycleButton), name, info);
 					} else if (info.widget != null) {
 						ClickableWidget widget;
 						Entry e = info.field.getAnnotation(Entry.class);
@@ -374,6 +486,17 @@ public abstract class MidnightConfig {
 				updateResetButtons();
 			}
 		}
+
+		@Override
+		public void renderBackground(MatrixStack matrices) {
+			assert this.client != null;
+			if (this.client.world != null) {
+				fillGradient(matrices, 0, 0, this.width, this.height, 2013265920, -2113929216);
+			} else {
+				this.renderBackgroundTexture(matrices);
+			}
+		}
+
 		@Override
 		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			this.renderBackground(matrices);
@@ -448,6 +571,15 @@ public abstract class MidnightConfig {
 			else if (info.field.getType() == double.class) info.value = Math.round((e.min() + value * (e.max() - e.min())) * (double) e.precision()) / (double) e.precision();
 			else if (info.field.getType() == float.class) info.value = Math.round((e.min() + value * (e.max() - e.min())) * (float) e.precision()) / (float) e.precision();
 			info.tempValue = String.valueOf(info.value);
+			if (info.mapPosition > 0) {
+				if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).size() == 0) {
+					addDefaultMapEntry(info);
+				}
+				EntryInfo relevantMapEntry = mapEntries.get(info.map).get(0);
+				((Map<String, List<Object>>) relevantMapEntry.value)
+						.get(((Map<String, ?>) relevantMapEntry.value).keySet().stream().toList().get(relevantMapEntry.index))
+						.set(info.mapPosition - 1, info.value);
+			}
 		}
 	}
 	@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD) public @interface Entry {
@@ -459,6 +591,8 @@ public abstract class MidnightConfig {
 		boolean isSlider() default false;
 		int precision() default 100;
 		String category() default "default";
+		String map() default "";
+		int mapPosition() default -1;
 	}
 	@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD) public @interface Client {}
 	@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD) public @interface Server {}
