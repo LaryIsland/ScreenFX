@@ -1,5 +1,9 @@
 package com.laryisland.screenfx.config;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ScreenFXConfig extends MidnightConfig {
 
 	public enum effectModeEnum { FIXED, DYNAMIC }
@@ -95,71 +99,92 @@ public class ScreenFXConfig extends MidnightConfig {
 
 	@Comment(category = "heldItem", centered = true)
 	public static Comment heldBlockMainHandSettings;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldBlockMainHandRotationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldBlockMainHandRotationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldBlockMainHandRotationAxisZ = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f)
-	public static float heldBlockMainHandScale = 1f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransX")
 	public static float heldBlockMainHandTranslationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransY")
 	public static float heldBlockMainHandTranslationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransZ")
 	public static float heldBlockMainHandTranslationAxisZ = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f, name = "screenfx.heldItemScale")
+	public static float heldBlockMainHandScale = 1f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotX")
+	public static float heldBlockMainHandRotationAxisX = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotY")
+	public static float heldBlockMainHandRotationAxisY = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotZ")
+	public static float heldBlockMainHandRotationAxisZ = 0f;
 	@Comment(category = "heldItem", centered = true)
 	public static Comment heldBlockOffhandSettings;
 	@Entry(category = "heldItem")
 	public static boolean heldBlockOffhandMirrorsMainHand = true;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldBlockOffhandRotationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldBlockOffhandRotationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldBlockOffhandRotationAxisZ = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f)
-	public static float heldBlockOffhandScale = 1f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransX")
 	public static float heldBlockOffhandTranslationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransY")
 	public static float heldBlockOffhandTranslationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransZ")
 	public static float heldBlockOffhandTranslationAxisZ = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f, name = "screenfx.heldItemScale")
+	public static float heldBlockOffhandScale = 1f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotX")
+	public static float heldBlockOffhandRotationAxisX = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotY")
+	public static float heldBlockOffhandRotationAxisY = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotZ")
+	public static float heldBlockOffhandRotationAxisZ = 0f;
 
 	@Comment(category = "heldItem", centered = true)
 	public static Comment heldItemMainHandSettings;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldItemMainHandRotationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldItemMainHandRotationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldItemMainHandRotationAxisZ = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f)
-	public static float heldItemMainHandScale = 1f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransX")
 	public static float heldItemMainHandTranslationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransY")
 	public static float heldItemMainHandTranslationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransZ")
 	public static float heldItemMainHandTranslationAxisZ = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f, name = "screenfx.heldItemScale")
+	public static float heldItemMainHandScale = 1f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotX")
+	public static float heldItemMainHandRotationAxisX = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotY")
+	public static float heldItemMainHandRotationAxisY = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotZ")
+	public static float heldItemMainHandRotationAxisZ = 0f;
 	@Comment(category = "heldItem", centered = true)
 	public static Comment heldItemOffhandSettings;
 	@Entry(category = "heldItem")
 	public static boolean heldItemOffhandMirrorsMainHand = true;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldItemOffhandRotationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldItemOffhandRotationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1)
-	public static float heldItemOffhandRotationAxisZ = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f)
-	public static float heldItemOffhandScale = 1f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransX")
 	public static float heldItemOffhandTranslationAxisX = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransY")
 	public static float heldItemOffhandTranslationAxisY = 0f;
-	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f)
+	@Entry(category = "heldItem", isSlider = true, min = -1f, max = 1f, name = "screenfx.heldItemTransZ")
 	public static float heldItemOffhandTranslationAxisZ = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = 0f, max = 2f, name = "screenfx.heldItemScale")
+	public static float heldItemOffhandScale = 1f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotX")
+	public static float heldItemOffhandRotationAxisX = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotY")
+	public static float heldItemOffhandRotationAxisY = 0f;
+	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotZ")
+	public static float heldItemOffhandRotationAxisZ = 0f;
+
+
+
+	@Comment(category = "uniqueHeldItem", centered = true)
+	public static Comment uniqueHeldItemSettings;
+	@Entry(category = "uniqueHeldItem", map = "uniqueHeldItem", mapPosition = 0)
+	public static Map<String, List<Float>> uniqueHeldItemMap = new LinkedHashMap<>();
+	@Entry(category = "uniqueHeldItem", isSlider = true, min = -1f, max = 1f, map = "uniqueHeldItem", mapPosition = 1, name = "screenfx.heldItemTransX")
+	public static float uniqueHeldItemTranslationAxisX = 0f;
+	@Entry(category = "uniqueHeldItem", isSlider = true, min = -1f, max = 1f, map = "uniqueHeldItem", mapPosition = 2, name = "screenfx.heldItemTransY")
+	public static float uniqueHeldItemTranslationAxisY = 0f;
+	@Entry(category = "uniqueHeldItem", isSlider = true, min = -1f, max = 1f, map = "uniqueHeldItem", mapPosition = 3, name = "screenfx.heldItemTransZ")
+	public static float uniqueHeldItemTranslationAxisZ = 0f;
+	@Entry(category = "uniqueHeldItem", isSlider = true, min = 0f, max = 2f, map = "uniqueHeldItem", mapPosition = 4, name = "screenfx.heldItemScale")
+	public static float uniqueHeldItemScale = 1f;
+	@Entry(category = "uniqueHeldItem", isSlider = true, min = -180f, max = 180f, precision = 1, map = "uniqueHeldItem", mapPosition = 5, name = "screenfx.heldItemRotX")
+	public static float uniqueHeldItemRotationAxisX = 0f;
+	@Entry(category = "uniqueHeldItem", isSlider = true, min = -180f, max = 180f, precision = 1, map = "uniqueHeldItem", mapPosition = 6, name = "screenfx.heldItemRotY")
+	public static float uniqueHeldItemRotationAxisY = 0f;
+	@Entry(category = "uniqueHeldItem", isSlider = true, min = -180f, max = 180f, precision = 1, map = "uniqueHeldItem", mapPosition = 7, name = "screenfx.heldItemRotZ")
+	public static float uniqueHeldItemRotationAxisZ = 0f;
 }
