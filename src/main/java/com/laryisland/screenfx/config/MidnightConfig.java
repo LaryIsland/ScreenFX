@@ -1,29 +1,38 @@
 package com.laryisland.screenfx.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.AbstractParentElement;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tab.GridScreenTab;
-import net.minecraft.client.gui.tab.Tab;
-import net.minecraft.client.gui.tab.TabManager;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 import java.awt.Color;
 import java.lang.annotation.ElementType;
@@ -37,9 +46,12 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.Nullable;
 
 // MidnightConfig v2.4.0
 
@@ -75,6 +87,239 @@ public abstract class MidnightConfig {
 	private static Path path;
 
 	private static final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).excludeFieldsWithModifiers(Modifier.PRIVATE).addSerializationExclusionStrategy(new HiddenAnnotationExclusionStrategy()).setPrettyPrinting().create();
+
+	@Environment(EnvType.CLIENT)
+	public static class Tab {
+		private final Text title;
+		protected final GridWidget grid = new GridWidget();
+
+		public Tab(Text title) { this.title = title; }
+
+		public Text getTitle() { return this.title; }
+
+		public void forEachChild(Consumer<ClickableWidget> consumer) {
+			for (Element child : this.grid.children()) {
+				consumer.accept((ClickableWidget) child);
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class TabManager {
+		private final Consumer<ClickableWidget> tabLoadConsumer;
+		private final Consumer<ClickableWidget> tabUnloadConsumer;
+		@Nullable
+		private Tab currentTab;
+
+		public TabManager(Consumer<ClickableWidget> tabLoadConsumer, Consumer<ClickableWidget> tabUnloadConsumer) {
+			this.tabLoadConsumer = tabLoadConsumer;
+			this.tabUnloadConsumer = tabUnloadConsumer;
+		}
+
+		public void setCurrentTab(Tab tab, boolean clickSound) {
+			if (!Objects.equals(this.currentTab, tab)) {
+				if (this.currentTab != null) {
+					this.currentTab.forEachChild(this.tabUnloadConsumer);
+				}
+
+				this.currentTab = tab;
+				tab.forEachChild(this.tabLoadConsumer);
+
+				if (clickSound) {
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+				}
+			}
+		}
+
+		@Nullable
+		public Tab getCurrentTab() { return this.currentTab; }
+	}
+
+	@Environment(value=EnvType.CLIENT)
+	public static class TabButtonWidget extends ClickableWidget {
+		private static final Identifier TAB_TEXTURE = new Identifier("screenfx", "tab_button.png");
+		private final TabManager tabManager;
+		private final Tab tab;
+
+		public TabButtonWidget(TabManager tabManager, Tab tab, int width, int height) {
+			super(0, 0, width, height, tab.getTitle());
+			this.tabManager = tabManager;
+			this.tab = tab;
+		}
+
+		@Override
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+			RenderSystem.setShaderTexture(0, TAB_TEXTURE);
+			TabButtonWidget.drawTexture(matrices, this.getX(), this.getY(), 0, this.getTextureV(), this.width, this.height, 94, 96);
+			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+			int i = this.active ? -1 : -6250336;
+			this.drawMessage(matrices, textRenderer, i);
+			if (this.isCurrentTab()) {
+				this.drawCurrentTabLine(matrices, textRenderer, i);
+			}
+		}
+
+		public void drawMessage(MatrixStack matrices, TextRenderer textRenderer, int color) {
+			int i = this.getX() + this.getWidth() / 2;
+			int j = ((this.isCurrentTab() ? 0 : 3) + this.getHeight() - textRenderer.fontHeight) / 2 + this.getY() + 1;
+			TabButtonWidget.drawCenteredTextWithShadow(matrices, textRenderer, this.getMessage().asOrderedText(), i, j, color);
+		}
+
+		private void drawCurrentTabLine(MatrixStack matrices, TextRenderer textRenderer, int color) {
+			int i = Math.min(textRenderer.getWidth(this.getMessage()), this.getWidth() - 4);
+			int j = this.getX() + (this.getWidth() - i) / 2;
+			int k = this.getY() + this.getHeight() - 2;
+			TabButtonWidget.fill(matrices, j, k, j + i, k + 1, color);
+		}
+
+		protected int getTextureV() {
+			int i = 2;
+			if (this.isCurrentTab()) {
+				i -= 2;
+			}
+			if (this.isHovered()) {
+				i += 1;
+			}
+			return i * 24;
+		}
+
+		@Override
+		protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+
+		@Override
+		public void playDownSound(SoundManager soundManager) {}
+
+		public Tab getTab() {
+			return this.tab;
+		}
+
+		public boolean isCurrentTab() {
+			return this.tabManager.getCurrentTab() == this.tab;
+		}
+	}
+
+	@Environment(value=EnvType.CLIENT)
+	public static class TabNavigationWidget extends AbstractParentElement implements Drawable, Element, Selectable {
+		public static final Identifier HEADER_SEPARATOR_TEXTURE = new Identifier("screenfx","header_separator.png");
+		private final GridWidget grid;
+		private final int tabNavWidth;
+		private final TabManager tabManager;
+		private final ImmutableList<Tab> tabs;
+		private final ImmutableList<TabButtonWidget> tabButtons;
+
+		TabNavigationWidget(int x, TabManager tabManager, Iterable<Tab> tabs) {
+			this.tabNavWidth = x;
+			this.tabManager = tabManager;
+			this.tabs = ImmutableList.copyOf(tabs);
+			this.grid = new GridWidget(0, 0);
+			this.grid.getMainPositioner().alignHorizontalCenter();
+			ImmutableList.Builder<TabButtonWidget> builder = ImmutableList.builder();
+			int i = 0;
+			for (Tab tab : tabs) {
+				builder.add(this.grid.add(new TabButtonWidget(tabManager, tab, 0, 24), 0, i++));
+			}
+			this.tabButtons = builder.build();
+		}
+
+		public static Builder builder(TabManager tabManager, int width) {
+			return new Builder(tabManager, width);
+		}
+
+		@Override
+		public void setFocused(@Nullable Element focused) {
+			super.setFocused(focused);
+			if (focused instanceof TabButtonWidget tabButtonWidget) {
+				this.tabManager.setCurrentTab(tabButtonWidget.getTab(), true);
+			}
+		}
+
+		@Override
+		public List<? extends Element> children() {
+			return this.tabButtons;
+		}
+
+		@Override
+		public Selectable.SelectionType getType() {
+			return this.tabButtons.stream().map(ClickableWidget::getType).max(Comparator.naturalOrder()).orElse(Selectable.SelectionType.NONE);
+		}
+
+		@Override
+		public void appendNarrations(NarrationMessageBuilder builder) {}
+
+		@Override
+		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+			TabNavigationWidget.fill(matrices, 0, 0, this.tabNavWidth, 24, -16777216);
+			RenderSystem.setShaderTexture(0, HEADER_SEPARATOR_TEXTURE);
+			TabNavigationWidget.drawTexture(matrices, 0, this.grid.getY() + this.grid.getHeight() - 2, 0.0f, 0.0f, this.tabNavWidth, 2, 32, 2);
+			for (TabButtonWidget tabButtonWidget : this.tabButtons) {
+				tabButtonWidget.render(matrices, mouseX, mouseY, delta);
+			}
+		}
+
+		public void init() {
+			int i = Math.min(400, this.tabNavWidth) - 28;
+			for (TabButtonWidget tabButtonWidget : this.tabButtons) {
+				tabButtonWidget.setWidth(MathHelper.roundUpToMultiple(i / this.tabs.size(), 2));
+			}
+			this.grid.recalculateDimensions();
+			this.grid.setX(MathHelper.roundUpToMultiple((this.tabNavWidth - i) / 2, 2));
+			this.grid.setY(0);
+		}
+
+		public void selectTab(int index, boolean clickSound) {
+			if (this.getFocused() != null) {
+				this.setFocused(this.tabButtons.get(index));
+			} else {
+				this.tabManager.setCurrentTab(this.tabs.get(index), clickSound);
+			}
+		}
+
+		public boolean trySwitchTabsWithKey(int keyCode) {
+			int i;
+			if (Screen.hasControlDown() && (i = this.getTabForKey(keyCode)) != -1) {
+				this.selectTab(MathHelper.clamp(i, 0, this.tabs.size() - 1), true);
+				return true;
+			}
+			return false;
+		}
+
+		private int getTabForKey(int keyCode) {
+			if (keyCode >= 49 && keyCode <= 57) {
+				return keyCode - 49;
+			}
+			int i;
+			if (keyCode == 258 && (i = this.getCurrentTabIndex()) != -1) {
+				int j = Screen.hasShiftDown() ? i - 1 : i + 1;
+				return Math.floorMod(j, this.tabs.size());
+			}
+			return -1;
+		}
+
+		private int getCurrentTabIndex() {
+			return this.tabs.indexOf(this.tabManager.getCurrentTab());
+		}
+
+		@Environment(value=EnvType.CLIENT)
+		public static class Builder {
+			private final int width;
+			private final TabManager tabManager;
+			private final List<Tab> tabs = new ArrayList<>();
+
+			Builder(TabManager tabManager, int width) {
+				this.tabManager = tabManager;
+				this.width = width;
+			}
+
+			public Builder tabs(Tab ... tabs) {
+				Collections.addAll(this.tabs, tabs);
+				return this;
+			}
+
+			public TabNavigationWidget build() {
+				return new TabNavigationWidget(this.width, this.tabManager, this.tabs);
+			}
+		}
+	}
 
 	private static List<?> addDefaultMapEntry(EntryInfo info) {
 		List<Object> valueList = new ArrayList<>(mapEntries.get(info.map).size() - 1);
@@ -326,7 +571,7 @@ public abstract class MidnightConfig {
 					String name = translationPrefix + "category." + tabId;
 					if (!I18n.hasTranslation(name) && tabId.equals("default"))
 						name = translationPrefix + "title";
-					Tab tab = new GridScreenTab(Text.translatable(name));
+					Tab tab = new Tab(Text.translatable(name));
 					if (!tabs.containsKey(name)) {
 						e.tab = tab;
 						tabs.put(name, tab);
