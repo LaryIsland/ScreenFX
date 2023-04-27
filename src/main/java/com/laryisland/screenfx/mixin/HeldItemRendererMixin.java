@@ -1,6 +1,7 @@
 package com.laryisland.screenfx.mixin;
 
 import com.laryisland.screenfx.config.ScreenFXConfig;
+import java.util.List;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;
@@ -29,10 +30,20 @@ public class HeldItemRendererMixin {
 			locals = LocalCapture.CAPTURE_FAILSOFT
 	)
 	private void renderHeldItem_matrixManipulation(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand,
-			float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices,
+			float swingProgress, ItemStack itemStack, float equipProgress, MatrixStack matrices,
 			VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
 		float transX, transY, transZ, scale, rotX, rotY, rotZ;
-		if (Item.BLOCK_ITEMS.containsValue(item.getItem())) {
+		if (ScreenFXConfig.uniqueHeldItemMap.containsKey(itemStack.getItem().toString())) {
+			List<Float> specificItemConfig = ScreenFXConfig.uniqueHeldItemMap.get(itemStack.getItem().toString());
+			transX = specificItemConfig.get(0);
+			transY = specificItemConfig.get(1);
+			transZ = specificItemConfig.get(2);
+			scale = specificItemConfig.get(3);
+			rotX = specificItemConfig.get(4);
+			rotY = specificItemConfig.get(5);
+			rotZ = specificItemConfig.get(6);
+		}
+		else if (Item.BLOCK_ITEMS.containsValue(itemStack.getItem())) {
 			transY = ScreenFXConfig.heldBlockMainHandTranslationAxisY;
 			transZ = ScreenFXConfig.heldBlockMainHandTranslationAxisZ;
 			scale = ScreenFXConfig.heldBlockMainHandScale;
