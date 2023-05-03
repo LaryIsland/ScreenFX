@@ -12,6 +12,8 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static Comment portalSettings;
 	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
 	public static float portalOpacity = 1f;
+	@Entry(category = "overlay")
+	public static boolean portalRemoveFadeIn = false;
 
 	@Comment(category = "overlay", centered = true)
 	public static Comment fireSettings;
