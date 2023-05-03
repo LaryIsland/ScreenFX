@@ -34,8 +34,11 @@ public class InGameHudMixin {
 			),
 			index = 3
 	)
-	private float renderPortalOverlay(float alpha) {
-		return ScreenFXConfig.portalOpacity;
+	private float renderPortalOverlay(float nauseaStrength) {
+		if (ScreenFXConfig.portalRemoveFadeIn) {
+			return ScreenFXConfig.portalOpacity;
+		}
+		return nauseaStrength * ScreenFXConfig.portalOpacity;
 	}
 
 	@ModifyArg(
