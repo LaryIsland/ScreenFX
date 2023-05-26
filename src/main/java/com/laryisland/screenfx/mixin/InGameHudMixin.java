@@ -26,10 +26,10 @@ public class InGameHudMixin {
 	public float vignetteDarkness;
 
 	@ModifyArg(
-			method = "renderPortalOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
+			method = "renderPortalOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
 					ordinal = 0
 			),
 			index = 3
@@ -42,10 +42,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "renderSpyglassOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;fill(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"
+					target = "Lnet/minecraft/client/gui/DrawContext;fill(Lnet/minecraft/client/render/RenderLayer;IIIIII)V"
 			),
 			index = 6
 	)
@@ -59,10 +59,10 @@ public class InGameHudMixin {
 	}
 
 	@Inject(
-			method = "renderSpyglassOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIFFIIII)V",
 					shift = Shift.BEFORE
 			)
 	)
@@ -71,10 +71,10 @@ public class InGameHudMixin {
 	}
 
 	@Inject(
-			method = "renderSpyglassOverlay(Lnet/minecraft/client/util/math/MatrixStack;F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIFFIIII)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIFFIIII)V",
 					shift = Shift.AFTER
 			)
 	)
@@ -83,10 +83,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArgs(
-			method = "renderVignetteOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/entity/Entity;)V",
+			method = "renderVignetteOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/Entity;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
 					ordinal = 1
 			)
 	)
@@ -109,10 +109,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArgs(
-			method = "renderVignetteOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/entity/Entity;)V",
+			method = "renderVignetteOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/Entity;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
 					ordinal = 0
 			)
 	)
@@ -140,10 +140,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "render(Lnet/minecraft/client/util/math/MatrixStack;F)V",
+			method = "render(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Identifier;F)V",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
 					ordinal = 0
 			)
 	)
@@ -152,10 +152,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "render(Lnet/minecraft/client/util/math/MatrixStack;F)V",
+			method = "render(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Identifier;F)V",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
 					ordinal = 1
 			)
 	)

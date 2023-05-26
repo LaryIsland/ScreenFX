@@ -7,7 +7,6 @@ import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import java.awt.Color;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,13 +25,12 @@ public class GameRendererMixin {
 	MinecraftClient client;
 	@Shadow
 	private int floatingItemTimeLeft;
-	private float distortionStrength = 1f;
 
 	@ModifyArgs(
-			method = "renderNausea(F)V",
+			method = "renderNausea(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
 					ordinal = 0
 			)
 	)
@@ -46,13 +44,12 @@ public class GameRendererMixin {
 			rgbArray[2] = args.get(2);
 		}
 		if (ScreenFXConfig.distortionMode == effectModeEnum.DYNAMIC) {
-			distortionStrength = (1f - client.options.getDistortionEffectScale().getValue().floatValue())
+			float distortionStrength = (1f - client.options.getDistortionEffectScale().getValue().floatValue())
 					* ScreenFXConfig.distortionStrength;
 			args.set(0, rgbArray[0] * distortionStrength * ScreenFXConfig.distortionOpacity);
 			args.set(1, rgbArray[1] * distortionStrength * ScreenFXConfig.distortionOpacity);
 			args.set(2, rgbArray[2] * distortionStrength * ScreenFXConfig.distortionOpacity);
 		} else if (ScreenFXConfig.distortionMode == effectModeEnum.FIXED) {
-			distortionStrength = ScreenFXConfig.distortionStrength;
 			args.set(0, rgbArray[0] * ScreenFXConfig.distortionOpacity);
 			args.set(1, rgbArray[1] * ScreenFXConfig.distortionOpacity);
 			args.set(2, rgbArray[2] * ScreenFXConfig.distortionOpacity);
@@ -60,12 +57,13 @@ public class GameRendererMixin {
 	}
 
 	@ModifyVariable(
-			method = "renderNausea(F)V",
-			at = @At("STORE"),
-			ordinal = 0
+			method = "renderNausea(Lnet/minecraft/client/gui/DrawContext;F)V",
+			at = @At("HEAD"),
+			ordinal = 0,
+			argsOnly = true
 	)
-	private double fixDistortionGrowth(double d) {
-		return MathHelper.lerp(distortionStrength, 2.0, 1.0);
+	private float fixDistortionGrowth(float f) {
+		return ScreenFXConfig.distortionStrength;
 	}
 
 	@Inject(

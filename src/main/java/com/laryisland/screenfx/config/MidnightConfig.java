@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
@@ -19,8 +19,8 @@ import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -41,7 +41,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-// MidnightConfig v2.4.0
+// MidnightConfig v2.4.1
 
 @SuppressWarnings("unchecked")
 public abstract class MidnightConfig {
@@ -172,6 +172,10 @@ public abstract class MidnightConfig {
 		entries.add(info);
 	}
 
+	public static Tooltip getTooltip(EntryInfo info) {
+		return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(info.id + ".midnightconfig."+info.field.getName()+".tooltip") ? Text.translatable(info.id + ".midnightconfig."+info.field.getName()+".tooltip") : Text.empty());
+	}
+
 	private static void textField(EntryInfo info, Function<String,Number> f, Pattern pattern, double min, double max, boolean cast) {
 		boolean isNumber = pattern != null;
 		info.widget = (BiFunction<TextFieldWidget, ButtonWidget, Predicate<String>>) (t, b) -> s -> {
@@ -187,6 +191,7 @@ public abstract class MidnightConfig {
 				info.error = inLimits? null : Text.literal(value.doubleValue() < min ?
 						"§cMinimum " + (isNumber? "value" : "length") + (cast? " is " + (int)min : " is " + min) :
 						"§cMaximum " + (isNumber? "value" : "length") + (cast? " is " + (int)max : " is " + max)).formatted(Formatting.RED);
+				t.setTooltip(getTooltip(info));
 			}
 
 			info.tempValue = s;
@@ -255,9 +260,11 @@ public abstract class MidnightConfig {
 		public MidnightConfigListWidget list;
 		public boolean reload = false;
 		public TabManager tabManager = new TabManager(a -> {}, a -> {});
+		public Map<String, Tab> tabs = new HashMap<>();
 		public Tab prevTab;
 		public TabNavigationWidget tabNavigation;
 		public ButtonWidget done;
+		public double scrollProgress = 0d;
 
 		// Real Time config update //
 		@Override
@@ -269,6 +276,7 @@ public abstract class MidnightConfig {
 				fillList();
 				list.setScrollAmount(0);
 			}
+			scrollProgress = list.getScrollAmount();
 			for (EntryInfo info : entries) {
 				try {info.field.set(null, info.value);} catch (IllegalAccessException ignored) {}
 			}
@@ -305,29 +313,19 @@ public abstract class MidnightConfig {
 			if (this.tabNavigation.trySwitchTabsWithKey(keyCode)) return true;
 			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
-		public Tooltip getTooltip(EntryInfo info) {
-			return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(translationPrefix+info.field.getName()+".tooltip") ? Text.translatable(translationPrefix+info.field.getName()+".tooltip") : Text.empty());
-		}
-		public void refresh() {
-			double scrollAmount = list.getScrollAmount();
-			list.clear();
-			fillList();
-			list.setScrollAmount(scrollAmount);
-		}
 		@Override
 		public void init() {
 			super.init();
 			loadValues();
 
-			Map<String, Tab> tabs = new HashMap<>();
 			for (EntryInfo e : entries) {
 				if (e.id.equals(modid)) {
 					String tabId = e.field.isAnnotationPresent(Entry.class) ? e.field.getAnnotation(Entry.class).category() : e.field.getAnnotation(Comment.class).category();
 					String name = translationPrefix + "category." + tabId;
 					if (!I18n.hasTranslation(name) && tabId.equals("default"))
 						name = translationPrefix + "title";
-					Tab tab = new GridScreenTab(Text.translatable(name));
 					if (!tabs.containsKey(name)) {
+						Tab tab = new GridScreenTab(Text.translatable(name));
 						e.tab = tab;
 						tabs.put(name, tab);
 					} else e.tab = tabs.get(name);
@@ -335,7 +333,7 @@ public abstract class MidnightConfig {
 			}
 			tabNavigation = TabNavigationWidget.builder(tabManager, this.width).tabs(tabs.values().toArray(new Tab[0])).build();
 			if (tabs.size() > 1) this.addDrawableChild(tabNavigation);
-			if (!reload) tabNavigation.selectTab(0, false);
+			tabNavigation.selectTab(0, false);
 			tabNavigation.init();
 			prevTab = tabManager.getCurrentTab();
 
@@ -359,6 +357,7 @@ public abstract class MidnightConfig {
 			this.addSelectableChild(this.list);
 
 			fillList();
+			reload = true;
 		}
 		public void fillList() {
 			for (EntryInfo info : entries) {
@@ -368,7 +367,8 @@ public abstract class MidnightConfig {
 						info.value = info.defaultValue;
 						info.tempValue = info.defaultValue.toString();
 						info.index = 0;
-						this.refresh();
+						list.clear();
+						fillList();
 					})).dimensions(width - 205, 0, 40, 20).build();
 
 					if (info.mapPosition > 0) {
@@ -383,9 +383,8 @@ public abstract class MidnightConfig {
 							((Map<String, List<Object>>) relevantMapEntry.value)
 									.get(((Map<String, ?>) relevantMapEntry.value).keySet().stream().toList().get(relevantMapEntry.index))
 									.set(info.mapPosition - 1, info.defaultValue);
-							this.reload = true;
-							this.refresh();
-							this.reload = false;
+							list.clear();
+							fillList();
 						})).dimensions(width - 205, 0, 40, 20).build();
 					}
 
@@ -408,9 +407,8 @@ public abstract class MidnightConfig {
 							if (((List<?>) info.value).contains("")) ((List<String>) info.value).remove("");
 							info.index = info.index + 1;
 							if (info.index > ((List<String>) info.value).size()) info.index = 0;
-							this.reload = true;
-							this.refresh();
-							this.reload = false;
+							list.clear();
+							fillList();
 						})).dimensions(width - 185, 0, 20, 20).build();
 						widget.setTooltip(getTooltip(info));
 						this.list.addButton(List.of(widget, resetButton, cycleButton), name, info);
@@ -422,9 +420,8 @@ public abstract class MidnightConfig {
 							if (((Map<String, ?>) info.value).size() > 0) {
 								updateMapPositionEntries(info);
 							}
-							this.reload = true;
-							this.refresh();
-							this.reload = false;
+							list.clear();
+							fillList();
 						})).dimensions(width - 205, 0, 40, 20).build();
 						if (!reload) info.index = 0;
 						TextFieldWidget widget = new TextFieldWidget(textRenderer, width - 160, 0, 150, 20, Text.empty());
@@ -446,9 +443,8 @@ public abstract class MidnightConfig {
 							if (((Map<String, ?>) info.value).size() != 0) {
 								updateMapPositionEntries(info);
 							}
-							this.reload = true;
-							this.refresh();
-							this.reload = false;
+							list.clear();
+							fillList();
 						})).dimensions(width - 185, 0, 20, 20).build();
 						widget.setTooltip(getTooltip(info));
 						this.list.addButton(List.of(widget, deleteButton, cycleButton), name, info);
@@ -483,27 +479,28 @@ public abstract class MidnightConfig {
 						this.list.addButton(List.of(), name, info);
 					}
 				}
+				list.setScrollAmount(scrollProgress);
 				updateResetButtons();
 			}
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrices) {
+		public void renderBackground(DrawContext context) {
 			assert this.client != null;
 			if (this.client.world != null) {
-				fillGradient(matrices, 0, 0, this.width, this.height, 2013265920, -2113929216);
+				context.fillGradient(0, 0, this.width, this.height, 2013265920, -2113929216);
 			} else {
-				this.renderBackgroundTexture(matrices);
+				this.renderBackgroundTexture(context);
 			}
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			this.renderBackground(matrices);
-			this.list.render(matrices, mouseX, mouseY, delta);
+		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+			this.renderBackground(context);
+			this.list.render(context, mouseX, mouseY, delta);
 
-			drawCenteredTextWithShadow(matrices, textRenderer, title, width / 2, 15, 0xFFFFFF);
-			super.render(matrices,mouseX,mouseY,delta);
+			if (tabs.size() < 2) context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 15, 0xFFFFFF);
+			super.render(context, mouseX, mouseY, delta);
 		}
 	}
 	@Environment(EnvType.CLIENT)
@@ -542,11 +539,17 @@ public abstract class MidnightConfig {
 			this.info = info;
 			children.addAll(buttons);
 		}
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			buttons.forEach(b -> { b.setY(y); b.render(matrices, mouseX, mouseY, tickDelta); });
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			buttons.forEach(b -> { b.setY(y); b.render(context, mouseX, mouseY, tickDelta); });
 			if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
-				if (info.centered) textRenderer.drawWithShadow(matrices, text, MinecraftClient.getInstance().getWindow().getScaledWidth() / 2f - (textRenderer.getWidth(text) / 2f), y + 5, 0xFFFFFF);
-				else DrawableHelper.drawTextWithShadow(matrices, textRenderer, text, 12, y + 5, 0xFFFFFF);
+				if (info.centered) context.drawTextWithShadow(textRenderer, text, MinecraftClient.getInstance().getWindow().getScaledWidth() / 2 - (textRenderer.getWidth(text) / 2), y + 5, 0xFFFFFF);
+				else {
+					int wrappedY = y;
+					for(Iterator<OrderedText> iterator = textRenderer.wrapLines(text, (buttons.size() > 1 ? buttons.get(1).getX()-24 : MinecraftClient.getInstance().getWindow().getScaledWidth() - 24)).iterator(); iterator.hasNext(); wrappedY += 9) {
+						OrderedText orderedText = iterator.next();
+						context.drawTextWithShadow(textRenderer, orderedText, 12, wrappedY + 5, 0xFFFFFF);
+					}
+				}
 			}
 		}
 		public List<? extends Element> children() {return children;}
