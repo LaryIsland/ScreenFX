@@ -41,12 +41,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-// MidnightConfig v2.4.1
+// MidnightConfig v2.5.0
 
 @SuppressWarnings("unchecked")
 public abstract class MidnightConfig {
 	private static final Pattern INTEGER_ONLY = Pattern.compile("(-?[0-9]*)");
-	private static final Pattern DECIMAL_ONLY = Pattern.compile("-?([\\d]+\\.?[\\d]*|[\\d]*\\.?[\\d]+|\\.)");
+	private static final Pattern DECIMAL_ONLY = Pattern.compile("-?(\\d+\\.?\\d*|\\d*\\.?\\d+|\\.)");
 	private static final Pattern HEXADECIMAL_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
 
 	private static final List<EntryInfo> entries = new ArrayList<>();
@@ -71,7 +71,7 @@ public abstract class MidnightConfig {
 		int mapPosition;
 	}
 
-	public static final Map<String,Class<?>> configClass = new HashMap<>();
+	public static final Map<String, Class<? extends MidnightConfig>> configClass = new HashMap<>();
 	private static Path path;
 
 	private static final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).excludeFieldsWithModifiers(Modifier.PRIVATE).addSerializationExclusionStrategy(new HiddenAnnotationExclusionStrategy()).setPrettyPrinting().create();
@@ -91,7 +91,7 @@ public abstract class MidnightConfig {
 
 	private static void updateMapPositionEntries(EntryInfo info) {
 		List<?> valueList = ((Map<String, List<?>>) info.value).get(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index));
-		if (valueList.size() > 0) {
+		if (!valueList.isEmpty()) {
 			int counter = 0;
 			for (EntryInfo mapInfo : mapEntries.get(info.map)) {
 				if (mapInfo.mapPosition != 0) {
@@ -103,7 +103,7 @@ public abstract class MidnightConfig {
 		}
 	}
 
-	public static void init(String modid, Class<?> config) {
+	public static void init(String modid, Class<? extends MidnightConfig> config) {
 		path = FabricLoader.getInstance().getConfigDir().resolve(modid + ".json");
 		configClass.put(modid, config);
 
@@ -145,7 +145,7 @@ public abstract class MidnightConfig {
 				}
 				mapEntries.get(info.map).add(info.mapPosition, info);
 			}
-			if (!e.name().equals("")) info.name = Text.translatable(e.name());
+			if (!e.name().isEmpty()) info.name = Text.translatable(e.name());
 			if (type == int.class) textField(info, Integer::parseInt, INTEGER_ONLY, (int) e.min(), (int) e.max(), true);
 			else if (type == float.class) textField(info, Float::parseFloat, DECIMAL_ONLY, (float) e.min(), (float) e.max(), false);
 			else if (type == double.class) textField(info, Double::parseDouble, DECIMAL_ONLY, e.min(), e.max(), false);
@@ -172,8 +172,8 @@ public abstract class MidnightConfig {
 		entries.add(info);
 	}
 
-	public static Tooltip getTooltip(EntryInfo info) {
-		return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(info.id + ".midnightconfig."+info.field.getName()+".tooltip") ? Text.translatable(info.id + ".midnightconfig."+info.field.getName()+".tooltip") : Text.empty());
+	protected static Tooltip getTooltip(EntryInfo info) {
+		return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(info.id + "." + info.field.getName() + ".tooltip") ? Text.translatable(info.id + "." + info.field.getName() + ".tooltip") : Text.empty());
 	}
 
 	private static void textField(EntryInfo info, Function<String,Number> f, Pattern pattern, double min, double max, boolean cast) {
@@ -205,7 +205,7 @@ public abstract class MidnightConfig {
 			}
 			else if (inLimits && info.field.getType() == Map.class) {
 				List<?> valueList;
-				if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).size() != 0) {
+				if (!((Map<String, ?>) mapEntries.get(info.map).get(0).value).isEmpty()) {
 					valueList = ((Map<String, List<?>>) info.value).get(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index));
 				}
 				else {
@@ -233,13 +233,21 @@ public abstract class MidnightConfig {
 		};
 	}
 
+	public static MidnightConfig getClass(String modid) {
+		try { return configClass.get(modid).getDeclaredConstructor().newInstance(); } catch (Exception e) {throw new RuntimeException(e);}
+	}
+
 	public static void write(String modid) {
+		getClass(modid).writeChanges(modid);
+	}
+
+	public void writeChanges(String modid) {
 		path = FabricLoader.getInstance().getConfigDir().resolve(modid + ".json");
 		try {
 			if (!Files.exists(path)) Files.createFile(path);
-			Files.write(path, gson.toJson(configClass.get(modid).getDeclaredConstructor().newInstance()).getBytes());
+			Files.write(path, gson.toJson(getClass(modid)).getBytes());
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(Arrays.toString(e.getStackTrace()));
 		}
 	}
 	@Environment(EnvType.CLIENT)
@@ -253,6 +261,25 @@ public abstract class MidnightConfig {
 			this.parent = parent;
 			this.modid = modid;
 			this.translationPrefix = modid + ".";
+			loadValues();
+
+			for (EntryInfo e : entries) {
+				if (e.id.equals(modid)) {
+					String tabId = e.field.isAnnotationPresent(Entry.class) ? e.field.getAnnotation(Entry.class).category() : e.field.getAnnotation(Comment.class).category();
+					String name = translationPrefix + "category." + tabId;
+					if (!I18n.hasTranslation(name) && tabId.equals("default"))
+						name = translationPrefix + "title";
+					if (!tabs.containsKey(name)) {
+						Tab tab = new GridScreenTab(Text.translatable(name));
+						e.tab = tab;
+						tabs.put(name, tab);
+					} else e.tab = tabs.get(name);
+				}
+			}
+			tabNavigation = TabNavigationWidget.builder(tabManager, this.width).tabs(tabs.values().toArray(new Tab[0])).build();
+			tabNavigation.selectTab(0, false);
+			tabNavigation.init();
+			prevTab = tabManager.getCurrentTab();
 		}
 		public final String translationPrefix;
 		public final Screen parent;
@@ -316,26 +343,9 @@ public abstract class MidnightConfig {
 		@Override
 		public void init() {
 			super.init();
-			loadValues();
-
-			for (EntryInfo e : entries) {
-				if (e.id.equals(modid)) {
-					String tabId = e.field.isAnnotationPresent(Entry.class) ? e.field.getAnnotation(Entry.class).category() : e.field.getAnnotation(Comment.class).category();
-					String name = translationPrefix + "category." + tabId;
-					if (!I18n.hasTranslation(name) && tabId.equals("default"))
-						name = translationPrefix + "title";
-					if (!tabs.containsKey(name)) {
-						Tab tab = new GridScreenTab(Text.translatable(name));
-						e.tab = tab;
-						tabs.put(name, tab);
-					} else e.tab = tabs.get(name);
-				}
-			}
-			tabNavigation = TabNavigationWidget.builder(tabManager, this.width).tabs(tabs.values().toArray(new Tab[0])).build();
-			if (tabs.size() > 1) this.addDrawableChild(tabNavigation);
-			tabNavigation.selectTab(0, false);
+			tabNavigation.setWidth(this.width);
 			tabNavigation.init();
-			prevTab = tabManager.getCurrentTab();
+			if (tabs.size() > 1) this.addDrawableChild(tabNavigation);
 
 			this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
 				loadValues();
@@ -377,7 +387,7 @@ public abstract class MidnightConfig {
 							info.value = info.defaultValue;
 							info.tempValue = info.defaultValue.toString();
 							info.index = 0;
-							if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).size() == 0) {
+							if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).isEmpty()) {
 								addDefaultMapEntry(info);
 							}
 							((Map<String, List<Object>>) relevantMapEntry.value)
@@ -410,6 +420,7 @@ public abstract class MidnightConfig {
 							list.clear();
 							fillList();
 						})).dimensions(width - 185, 0, 20, 20).build();
+						cycleButton.setTooltip(Tooltip.of(Text.literal("Cycle Entries")));
 						widget.setTooltip(getTooltip(info));
 						this.list.addButton(List.of(widget, resetButton, cycleButton), name, info);
 					} else if (info.field.getType() == Map.class) {
@@ -417,7 +428,7 @@ public abstract class MidnightConfig {
 							((Map<String, ?>) info.value).remove(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index));
 							info.tempValue = info.defaultValue.toString();
 							info.index = Math.max(info.index - 1, 0);
-							if (((Map<String, ?>) info.value).size() > 0) {
+							if (!((Map<String, ?>) info.value).isEmpty()) {
 								updateMapPositionEntries(info);
 							}
 							list.clear();
@@ -432,6 +443,7 @@ public abstract class MidnightConfig {
 						widget.setTextPredicate(processor);
 						deleteButton.setWidth(20);
 						deleteButton.setMessage(Text.literal("D").formatted(Formatting.GRAY));
+						deleteButton.setTooltip(Tooltip.of(Text.literal("Delete Entry")));
 						ButtonWidget cycleButton = ButtonWidget.builder(Text.literal(String.valueOf(info.index)).formatted(Formatting.GOLD), (button -> {
 							info.index += 1;
 							if (info.index == ((Map<String, ?>) info.value).size() && !((Map<String, ?>) info.value).get(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index - 1)).equals("item_name")) {
@@ -440,12 +452,13 @@ public abstract class MidnightConfig {
 							if (info.index >= ((Map<String, ?>) info.value).size()) {
 								info.index = 0;
 							}
-							if (((Map<String, ?>) info.value).size() != 0) {
+							if (!((Map<String, ?>) info.value).isEmpty()) {
 								updateMapPositionEntries(info);
 							}
 							list.clear();
 							fillList();
 						})).dimensions(width - 185, 0, 20, 20).build();
+						cycleButton.setTooltip(Tooltip.of(Text.literal("Cycle Entries")));
 						widget.setTooltip(getTooltip(info));
 						this.list.addButton(List.of(widget, deleteButton, cycleButton), name, info);
 					} else if (info.widget != null) {
@@ -485,7 +498,7 @@ public abstract class MidnightConfig {
 		}
 
 		@Override
-		public void renderBackground(DrawContext context) {
+		public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 			assert this.client != null;
 			if (this.client.world != null) {
 				context.fillGradient(0, 0, this.width, this.height, 2013265920, -2113929216);
@@ -496,11 +509,10 @@ public abstract class MidnightConfig {
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-			this.renderBackground(context);
+			super.render(context, mouseX, mouseY, delta);
 			this.list.render(context, mouseX, mouseY, delta);
 
 			if (tabs.size() < 2) context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 15, 0xFFFFFF);
-			super.render(context, mouseX, mouseY, delta);
 		}
 	}
 	@Environment(EnvType.CLIENT)
@@ -515,7 +527,7 @@ public abstract class MidnightConfig {
 		@Override
 		public int getScrollbarPositionX() { return this.width -7; }
 
-		public void addButton(List<ClickableWidget> buttons, Text text, EntryInfo info) {
+		protected void addButton(List<ClickableWidget> buttons, Text text, EntryInfo info) {
 			this.addEntry(new ButtonEntry(buttons, text, info));
 		}
 		public void clear() {
@@ -528,7 +540,7 @@ public abstract class MidnightConfig {
 		private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 		public final List<ClickableWidget> buttons;
 		private final Text text;
-		public final EntryInfo info;
+		protected final EntryInfo info;
 		private final List<ClickableWidget> children = new ArrayList<>();
 		public static final Map<ClickableWidget, Text> buttonsWithText = new HashMap<>();
 
@@ -575,7 +587,7 @@ public abstract class MidnightConfig {
 			else if (info.field.getType() == float.class) info.value = Math.round((e.min() + value * (e.max() - e.min())) * (float) e.precision()) / (float) e.precision();
 			info.tempValue = String.valueOf(info.value);
 			if (info.mapPosition > 0) {
-				if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).size() == 0) {
+				if (((Map<String, ?>) mapEntries.get(info.map).get(0).value).isEmpty()) {
 					addDefaultMapEntry(info);
 				}
 				EntryInfo relevantMapEntry = mapEntries.get(info.map).get(0);
