@@ -19,8 +19,8 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static Comment fireSettings;
 	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
 	public static float fireOpacity = 0.9f;
-	@Entry(category = "overlay", isSlider = true, min = -0.7f, max = 0.1f)
-	public static float firePosition = -0.3f;
+	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
+	public static float firePosition = 0.5f;
 	@Entry(category = "overlay")
 	public static boolean fireCreativeHide = false;
 	@Entry(category = "overlay")
@@ -40,8 +40,8 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static Comment spyglassSettings;
 	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
 	public static float spyglassTextureOpacity = 1f;
-	@Entry(category = "overlay", isSlider = true, min = 0, max = 255)
-	public static int spyglassOverlayOpacity = 255;
+	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
+	public static float spyglassOverlayOpacity = 1;
 	@Entry(category = "overlay", isColor = true)
 	public static String spyglassOverlayColour = "#000000";
 
@@ -67,7 +67,7 @@ public class ScreenFXConfig extends MidnightConfig {
 	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
 	public static float distortionOpacity = 1f;
 	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
-	public static float distortionStrength = 1f;
+	public static float distortionRadius = 1f;
 
 	@Comment(category = "overlay", centered = true)
 	public static Comment inWallSettings;
@@ -169,8 +169,6 @@ public class ScreenFXConfig extends MidnightConfig {
 	@Entry(category = "heldItem", isSlider = true, min = -180f, max = 180f, precision = 1, name = "screenfx.heldItemRotZ")
 	public static float heldItemOffhandRotationAxisZ = 0f;
 
-
-
 	@Comment(category = "uniqueHeldItem", centered = true)
 	public static Comment uniqueHeldItemSettings;
 	@Entry(category = "uniqueHeldItem", map = "uniqueHeldItem", mapPosition = 0)
@@ -189,4 +187,25 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static float uniqueHeldItemRotationAxisY = 0f;
 	@Entry(category = "uniqueHeldItem", isSlider = true, min = -180f, max = 180f, precision = 1, map = "uniqueHeldItem", mapPosition = 7, name = "screenfx.heldItemRotZ")
 	public static float uniqueHeldItemRotationAxisZ = 0f;
+
+	@Comment(category = "testing", centered = true)
+	public static Comment testingSettings;
+	@Entry(category = "testing", isSlider = true, min = 0f, max = 1f)
+	public static float portalTesting = 0f;
+	@Entry(category = "testing")
+	public static boolean fireTesting = false;
+	@Entry(category = "testing")
+	public static boolean pumpkinTesting = false;
+	@Entry(category = "testing", isSlider = true, min = 0f, max = 1f)
+	public static float powerSnowTesting = 0f;
+	@Entry(category = "testing")
+	public static boolean spyglassTesting = false;
+	@Entry(category = "testing", isSlider = true, min = 0f, max = 1f)
+	public static float distortionTesting = 0f;
+	@Entry(category = "testing")
+	public static boolean inWallTesting = false;
+	@Entry(category = "testing")
+	public static boolean underwaterTesting = false;
+	@Entry(category = "testing")
+	public static boolean elderGuardianTesting = false;
 }

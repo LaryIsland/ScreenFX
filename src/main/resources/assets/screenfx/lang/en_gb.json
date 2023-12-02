@@ -2,5 +2,6 @@
 	"screenfx.distortionColour": "Colour",
 	"screenfx.spyglassOverlayColour": "Overlay Colour",
 	"screenfx.vignetteColour": "Colour",
-	"screenfx.vignetteWorldBorderColour": "World Border Colour"
+	"screenfx.vignetteWorldBorderColour": "World Border Colour",
+	"screenfx.vignetteWorldBorderDisable.tooltip": "Disables the world border from overriding the vignette colour and intensity"
 }

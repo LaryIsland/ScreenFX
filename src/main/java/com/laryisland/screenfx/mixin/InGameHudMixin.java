@@ -7,20 +7,27 @@ import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.awt.Color;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
 
+	@Unique
 	private static float opacity = 1f;
 	@Shadow
 	public float vignetteDarkness;
@@ -52,10 +59,11 @@ public class InGameHudMixin {
 	private int renderSpyglassOverlay_opacity(int color) {
 		if (ScreenFXConfig.spyglassOverlayColour.length() == 7
 				&& validColour.matcher(ScreenFXConfig.spyglassOverlayColour).matches()) {
-			return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity)
+			return Long.valueOf(Integer.toHexString((int) (ScreenFXConfig.spyglassOverlayOpacity * 255))
 					+ ScreenFXConfig.spyglassOverlayColour.substring(1), 16).intValue();
 		}
-		return Long.valueOf(Integer.toHexString(ScreenFXConfig.spyglassOverlayOpacity) + "000000", 16).intValue();
+		return Long.valueOf(Integer.toHexString((int) (ScreenFXConfig.spyglassOverlayOpacity * 255)) + "000000", 16)
+				.intValue();
 	}
 
 	@Inject(
@@ -160,6 +168,63 @@ public class InGameHudMixin {
 			)
 	)
 	private float renderPowderSnowOverlay(float freezingScale) {
+		if (ScreenFXConfig.powerSnowTesting != 0f) {
+			return ScreenFXConfig.powderSnowOpacity * ScreenFXConfig.powerSnowTesting;
+		}
 		return ScreenFXConfig.powderSnowOpacity * freezingScale;
+	}
+
+	@ModifyVariable(
+			method = "render",
+			at = @At("STORE"),
+			ordinal = 1
+	)
+	private float renderPortalTesting(float f) {
+		if (ScreenFXConfig.portalTesting != 0f) {
+			return ScreenFXConfig.portalTesting;
+		}
+		return f;
+	}
+
+	@Redirect(
+			method = "render",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"
+			)
+	)
+	private boolean renderPumpkinBlurTesting(ItemStack instance, Item item) {
+		if (ScreenFXConfig.pumpkinTesting) {
+			return true;
+		}
+		return instance.isOf(item);
+	}
+
+	@Redirect(
+			method = "render",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/network/ClientPlayerEntity;getFrozenTicks()I"
+			)
+	)
+	private int renderPowerSnowTesting(ClientPlayerEntity instance) {
+		if (ScreenFXConfig.powerSnowTesting != 0f) {
+			return 1;
+		}
+		return instance.getFrozenTicks();
+	}
+
+	@Redirect(
+			method = "render",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingSpyglass()Z"
+			)
+	)
+	private boolean renderSpyglassTesting(ClientPlayerEntity instance) {
+		if (ScreenFXConfig.spyglassTesting) {
+			return true;
+		}
+		return instance.isUsingSpyglass();
 	}
 }
