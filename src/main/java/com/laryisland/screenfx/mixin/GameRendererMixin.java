@@ -89,7 +89,7 @@ public class GameRendererMixin {
 	@ModifyVariable(
 			method = "render",
 			at = @At("STORE"),
-			ordinal = 1
+			ordinal = 2
 	)
 	private float renderDistortionTesting_NauseaIntensity(float f) {
 		if (ScreenFXConfig.distortionTesting != 0) {

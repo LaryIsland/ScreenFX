@@ -27,7 +27,7 @@
 		"screenfx.mixins.json"
 	],
 	"depends": {
-		"minecraft": "1.20.2",
+		"minecraft": ">=1.20.3",
 		"java": ">=17"
 	}
 }

@@ -4,6 +4,28 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.awt.Color;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -17,29 +39,18 @@ import net.minecraft.client.gui.tab.GridScreenTab;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.client.gui.widget.TabNavigationWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
-import java.awt.Color;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 // MidnightConfig v2.5.0
 
@@ -362,7 +373,7 @@ public abstract class MidnightConfig {
 				Objects.requireNonNull(client).setScreen(parent);
 			}).dimensions(this.width / 2 + 4, this.height - 28, 150, 20).build());
 
-			this.list = new MidnightConfigListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+			this.list = new MidnightConfigListWidget(this.client, this.width, this.height - 64, 32, 25);
 			if (this.client != null && this.client.world != null) this.list.setRenderBackground(false);
 			this.addSelectableChild(this.list);
 
@@ -519,8 +530,8 @@ public abstract class MidnightConfig {
 	public static class MidnightConfigListWidget extends ElementListWidget<ButtonEntry> {
 		TextRenderer textRenderer;
 
-		public MidnightConfigListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-			super(minecraftClient, i, j, k, l, m);
+		public MidnightConfigListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l) {
+			super(minecraftClient, i, j, k, l);
 			this.centerListVertically = false;
 			textRenderer = minecraftClient.textRenderer;
 		}
