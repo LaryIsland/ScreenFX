@@ -1,5 +1,6 @@
 package com.laryisland.screenfx.config;
 
+import com.google.common.collect.Lists;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -52,7 +53,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-// MidnightConfig v2.5.0
+// MidnightConfig v2.5.1
 
 @SuppressWarnings("unchecked")
 public abstract class MidnightConfig {
@@ -63,7 +64,7 @@ public abstract class MidnightConfig {
 	private static final List<EntryInfo> entries = new ArrayList<>();
 	private static final Map<String, List<EntryInfo>> mapEntries = new LinkedHashMap<>();
 
-	protected static class EntryInfo {
+	public static class EntryInfo {
 		Field field;
 		Object widget;
 		int width;
@@ -184,7 +185,8 @@ public abstract class MidnightConfig {
 	}
 
 	protected static Tooltip getTooltip(EntryInfo info) {
-		return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(info.id + "." + info.field.getName() + ".tooltip") ? Text.translatable(info.id + "." + info.field.getName() + ".tooltip") : Text.empty());
+		String key = info.id + "." + info.field.getName() + ".tooltip";
+		return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(key) ? Text.translatable(key) : Text.empty());
 	}
 
 	private static void textField(EntryInfo info, Function<String,Number> f, Pattern pattern, double min, double max, boolean cast) {
@@ -493,8 +495,7 @@ public abstract class MidnightConfig {
 							})).dimensions(width - 185, 0, 20, 20).build();
 							try {
 								colorButton.setMessage(Text.literal("⬛").setStyle(Style.EMPTY.withColor(Color.decode(info.tempValue).getRGB())));
-							} catch (Exception ignored) {
-							}
+							} catch (Exception ignored) {}
 							info.colorButton = colorButton;
 							colorButton.active = false;
 							this.list.addButton(List.of(widget, resetButton, colorButton), name, info);
@@ -542,9 +543,7 @@ public abstract class MidnightConfig {
 		protected void addButton(List<ClickableWidget> buttons, Text text, EntryInfo info) {
 			this.addEntry(new ButtonEntry(buttons, text, info));
 		}
-		public void clear() {
-			this.clearEntries();
-		}
+		public void clear() { this.clearEntries(); }
 		@Override
 		public int getRowWidth() { return 10000; }
 	}
@@ -553,7 +552,6 @@ public abstract class MidnightConfig {
 		public final List<ClickableWidget> buttons;
 		private final Text text;
 		protected final EntryInfo info;
-		private final List<ClickableWidget> children = new ArrayList<>();
 		public static final Map<ClickableWidget, Text> buttonsWithText = new HashMap<>();
 
 		private ButtonEntry(List<ClickableWidget> buttons, Text text, EntryInfo info) {
@@ -561,7 +559,6 @@ public abstract class MidnightConfig {
 			this.buttons = buttons;
 			this.text = text;
 			this.info = info;
-			children.addAll(buttons);
 		}
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			buttons.forEach(b -> { b.setY(y); b.render(context, mouseX, mouseY, tickDelta); });
@@ -576,8 +573,8 @@ public abstract class MidnightConfig {
 				}
 			}
 		}
-		public List<? extends Element> children() {return children;}
-		public List<? extends Selectable> selectableChildren() {return children;}
+		public List<? extends Element> children() {return Lists.newArrayList(buttons);}
+		public List<? extends Selectable> selectableChildren() {return Lists.newArrayList(buttons);}
 	}
 	private static class MidnightSliderWidget extends SliderWidget {
 		private final EntryInfo info; private final Entry e;
