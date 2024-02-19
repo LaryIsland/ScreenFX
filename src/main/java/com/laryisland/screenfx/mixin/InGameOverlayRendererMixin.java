@@ -58,7 +58,8 @@ public abstract class InGameOverlayRendererMixin {
 			method = "renderUnderwaterOverlay(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/util/math/MatrixStack;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
+					target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+					ordinal = 0
 			),
 			index = 3
 	)

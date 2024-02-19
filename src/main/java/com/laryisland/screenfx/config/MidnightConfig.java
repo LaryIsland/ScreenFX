@@ -1,9 +1,32 @@
 package com.laryisland.screenfx.config;
 
+import com.google.common.collect.Lists;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.awt.Color;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -17,7 +40,13 @@ import net.minecraft.client.gui.tab.GridScreenTab;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.client.gui.widget.TabNavigationWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
@@ -25,23 +54,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.awt.Color;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-
-// MidnightConfig v2.5.0
+// MidnightConfig v2.5.1
 
 @SuppressWarnings("unchecked")
 public abstract class MidnightConfig {
@@ -52,7 +65,7 @@ public abstract class MidnightConfig {
 	private static final List<EntryInfo> entries = new ArrayList<>();
 	private static final Map<String, List<EntryInfo>> mapEntries = new LinkedHashMap<>();
 
-	protected static class EntryInfo {
+	public static class EntryInfo {
 		Field field;
 		Object widget;
 		int width;
@@ -173,7 +186,8 @@ public abstract class MidnightConfig {
 	}
 
 	protected static Tooltip getTooltip(EntryInfo info) {
-		return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(info.id + "." + info.field.getName() + ".tooltip") ? Text.translatable(info.id + "." + info.field.getName() + ".tooltip") : Text.empty());
+		String key = info.id + "." + info.field.getName() + ".tooltip";
+		return Tooltip.of(info.error != null ? info.error : I18n.hasTranslation(key) ? Text.translatable(key) : Text.empty());
 	}
 
 	private static void textField(EntryInfo info, Function<String,Number> f, Pattern pattern, double min, double max, boolean cast) {
@@ -482,8 +496,7 @@ public abstract class MidnightConfig {
 							})).dimensions(width - 185, 0, 20, 20).build();
 							try {
 								colorButton.setMessage(Text.literal("⬛").setStyle(Style.EMPTY.withColor(Color.decode(info.tempValue).getRGB())));
-							} catch (Exception ignored) {
-							}
+							} catch (Exception ignored) {}
 							info.colorButton = colorButton;
 							colorButton.active = false;
 							this.list.addButton(List.of(widget, resetButton, colorButton), name, info);
@@ -498,31 +511,25 @@ public abstract class MidnightConfig {
 		}
 
 		@Override
-		public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-			assert this.client != null;
-			if (this.client.world != null) {
-				context.fillGradient(0, 0, this.width, this.height, 2013265920, -2113929216);
-			} else {
-				this.renderBackgroundTexture(context);
-			}
+		public void renderInGameBackground(DrawContext context) {
+			context.fillGradient(0, 0, this.width, this.height, 2013265920, -2113929216);
 		}
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-			super.render(context, mouseX, mouseY, delta);
+			if (this.client != null && this.client.world != null) { renderInGameBackground(context); }
 			this.list.render(context, mouseX, mouseY, delta);
+			super.render(context, mouseX, mouseY, delta);
 
 			if (tabs.size() < 2) context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 15, 0xFFFFFF);
 		}
+		@Override public void renderBackground(DrawContext c, int x, int y, float d) {}
 	}
+
 	@Environment(EnvType.CLIENT)
 	public static class MidnightConfigListWidget extends ElementListWidget<ButtonEntry> {
-		TextRenderer textRenderer;
-
-		public MidnightConfigListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-			super(minecraftClient, i, j, k, l, m);
-			this.centerListVertically = false;
-			textRenderer = minecraftClient.textRenderer;
+		public MidnightConfigListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+			super(client, width, height, top, bottom, itemHeight);
 		}
 		@Override
 		public int getScrollbarPositionX() { return this.width -7; }
@@ -530,18 +537,28 @@ public abstract class MidnightConfig {
 		protected void addButton(List<ClickableWidget> buttons, Text text, EntryInfo info) {
 			this.addEntry(new ButtonEntry(buttons, text, info));
 		}
-		public void clear() {
-			this.clearEntries();
-		}
+		public void clear() { this.clearEntries(); }
 		@Override
 		public int getRowWidth() { return 10000; }
+		@Override
+		protected void renderDecorations(DrawContext c, int mouseX, int mouseY) {
+			c.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
+			c.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
+			if (client == null || client.world == null) {
+				c.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.left, this.bottom, 0.0F, 0.0F, this.width, this.height, 32, 32);
+				c.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216, 0);
+			} else {
+				c.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, 1677721600, 0);
+			}
+			c.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.top, this.right, this.top + 4, -16777216, 0, 0);
+			c.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		}
 	}
 	public static class ButtonEntry extends ElementListWidget.Entry<ButtonEntry> {
 		private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 		public final List<ClickableWidget> buttons;
 		private final Text text;
 		protected final EntryInfo info;
-		private final List<ClickableWidget> children = new ArrayList<>();
 		public static final Map<ClickableWidget, Text> buttonsWithText = new HashMap<>();
 
 		private ButtonEntry(List<ClickableWidget> buttons, Text text, EntryInfo info) {
@@ -549,7 +566,6 @@ public abstract class MidnightConfig {
 			this.buttons = buttons;
 			this.text = text;
 			this.info = info;
-			children.addAll(buttons);
 		}
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			buttons.forEach(b -> { b.setY(y); b.render(context, mouseX, mouseY, tickDelta); });
@@ -564,8 +580,8 @@ public abstract class MidnightConfig {
 				}
 			}
 		}
-		public List<? extends Element> children() {return children;}
-		public List<? extends Selectable> selectableChildren() {return children;}
+		public List<? extends Element> children() {return Lists.newArrayList(buttons);}
+		public List<? extends Selectable> selectableChildren() {return Lists.newArrayList(buttons);}
 	}
 	private static class MidnightSliderWidget extends SliderWidget {
 		private final EntryInfo info; private final Entry e;

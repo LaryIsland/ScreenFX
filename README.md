@@ -8,16 +8,16 @@
 ### ScreenFX is a client-side, resource pack compatible, quality of life<br>fabric mod for changing overlays and screen effects
 </div>
 
-## [✅ Features](https://laryisland.com/screenfx.html)
-- First person fire
-- Underwater overlay
-- Nether Portal swirls
-- Spyglass
+## [Editable Overlays/Effects](https://laryisland.com/screenfx.html)
+- First Person Fire
+- Underwater Overlay
+- Nether Portal Swirls
+- Spyglass Scope
 - Vignette
 - Distortion (Nausea)
-- Pumpkin blur
-- Powder snow freezing
-- Stuck in wall
-- Elder Guardian animation
-- Totem of Undying animation
-- Held item viewmodels
+- Pumpkin Blur
+- Powder Snow Freezing
+- Suffocation Overlay
+- Elder Guardian Effect
+- Totem of Undying Effect
+- Held Item Viewmodels
