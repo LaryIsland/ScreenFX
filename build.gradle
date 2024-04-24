@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.5-SNAPSHOT'
+	id 'fabric-loom' version '1.6-SNAPSHOT'
 }
 
 version = project.mod_version+'+'+project.minecraft_version
@@ -35,6 +35,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
 	it.options.encoding = "UTF-8"
 }
 

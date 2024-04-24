@@ -10,6 +10,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -106,10 +107,10 @@ public class GameRendererMixin {
 			method = "render",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z"
+					target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)Z"
 			)
 	)
-	private boolean renderDistortionTesting_NauseaCheck(ClientPlayerEntity instance, StatusEffect statusEffect) {
+	private boolean renderDistortionTesting_NauseaCheck(ClientPlayerEntity instance, RegistryEntry<StatusEffect> statusEffect) {
 		if (ScreenFXConfig.distortionTesting != 0) {
 			return true;
 		}

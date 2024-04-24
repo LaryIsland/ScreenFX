@@ -46,7 +46,6 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TabNavigationWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
@@ -54,7 +53,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-// MidnightConfig v2.5.1
+// MidnightConfig v2.5.2
 
 @SuppressWarnings("unchecked")
 public abstract class MidnightConfig {
@@ -261,7 +260,7 @@ public abstract class MidnightConfig {
 			if (!Files.exists(path)) Files.createFile(path);
 			Files.write(path, gson.toJson(getClass(modid)).getBytes());
 		} catch (Exception e) {
-			System.err.println(Arrays.toString(e.getStackTrace()));
+			e.fillInStackTrace();
 		}
 	}
 	@Environment(EnvType.CLIENT)
@@ -364,7 +363,7 @@ public abstract class MidnightConfig {
 			this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
 				loadValues();
 				Objects.requireNonNull(client).setScreen(parent);
-			}).dimensions(this.width / 2 - 154, this.height - 28, 150, 20).build());
+			}).dimensions(this.width / 2 - 154, this.height - 26, 150, 20).build());
 			done = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, (button) -> {
 				for (EntryInfo info : entries)
 					if (info.id.equals(modid)) {
@@ -374,10 +373,9 @@ public abstract class MidnightConfig {
 					}
 				write(modid);
 				Objects.requireNonNull(client).setScreen(parent);
-			}).dimensions(this.width / 2 + 4, this.height - 28, 150, 20).build());
+			}).dimensions(this.width / 2 + 4, this.height - 26, 150, 20).build());
 
-			this.list = new MidnightConfigListWidget(this.client, this.width, this.height - 64, 32, 25);
-			if (this.client != null && this.client.world != null) this.list.setRenderBackground(false);
+			this.list = new MidnightConfigListWidget(this.client, this.width, this.height - 64, 24, 25);
 			this.addSelectableChild(this.list);
 
 			fillList();
@@ -517,13 +515,11 @@ public abstract class MidnightConfig {
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-			if (this.client != null && this.client.world != null) { renderInGameBackground(context); }
-			this.list.render(context, mouseX, mouseY, delta);
 			super.render(context, mouseX, mouseY, delta);
+			this.list.render(context, mouseX, mouseY, delta);
 
-			if (tabs.size() < 2) context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 15, 0xFFFFFF);
+			if (tabs.size() < 2) context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 10, 0xFFFFFF);
 		}
-		@Override public void renderBackground(DrawContext c, int x, int y, float d) {}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -532,7 +528,7 @@ public abstract class MidnightConfig {
 			super(client, width, height, y, itemHeight);
 		}
 		@Override
-		public int getScrollbarPositionX() { return this.width -7; }
+		public int getScrollbarX() { return this.width -7; }
 
 		protected void addButton(List<ClickableWidget> buttons, Text text, EntryInfo info) {
 			this.addEntry(new ButtonEntry(buttons, text, info));
@@ -540,19 +536,6 @@ public abstract class MidnightConfig {
 		public void clear() { this.clearEntries(); }
 		@Override
 		public int getRowWidth() { return 10000; }
-		@Override
-		protected void renderDecorations(DrawContext c, int mouseX, int mouseY) {
-			c.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-			c.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.getX(), 0, 0.0F, 0.0F, this.width, this.getY(), 32, 32);
-			if (client == null || client.world == null) {
-				c.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.getX(), this.getBottom(), 0.0F, 0.0F, this.width, this.height, 32, 32);
-				c.fillGradient(RenderLayer.getGuiOverlay(), this.getX(), this.getBottom() - 4, this.getRight(), this.getBottom(), 0, -16777216, 0);
-			} else {
-				c.fillGradient(RenderLayer.getGuiOverlay(), this.getX(), this.getBottom() - 4, this.getRight(), this.getBottom(), 0, 1677721600, 0);
-			}
-			c.fillGradient(RenderLayer.getGuiOverlay(), this.getX(), this.getY(), this.getRight(), this.getY() + 4, -16777216, 0, 0);
-			c.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		}
 	}
 	public static class ButtonEntry extends ElementListWidget.Entry<ButtonEntry> {
 		private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
@@ -570,13 +553,9 @@ public abstract class MidnightConfig {
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			buttons.forEach(b -> { b.setY(y); b.render(context, mouseX, mouseY, tickDelta); });
 			if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
-				if (info.centered) context.drawTextWithShadow(textRenderer, text, MinecraftClient.getInstance().getWindow().getScaledWidth() / 2 - (textRenderer.getWidth(text) / 2), y + 5, 0xFFFFFF);
-				else {
-					int wrappedY = y;
-					for(Iterator<OrderedText> iterator = textRenderer.wrapLines(text, (buttons.size() > 1 ? buttons.get(1).getX()-24 : MinecraftClient.getInstance().getWindow().getScaledWidth() - 24)).iterator(); iterator.hasNext(); wrappedY += 9) {
-						OrderedText orderedText = iterator.next();
-						context.drawTextWithShadow(textRenderer, orderedText, 12, wrappedY + 5, 0xFFFFFF);
-					}
+				int wrappedY = y;
+				for(Iterator<OrderedText> textIterator = textRenderer.wrapLines(text, (buttons.size() > 1 ? buttons.get(1).getX()-24 : MinecraftClient.getInstance().getWindow().getScaledWidth() - 24)).iterator(); textIterator.hasNext(); wrappedY += 9) {
+					context.drawTextWithShadow(textRenderer, textIterator.next(), (info.centered) ? (MinecraftClient.getInstance().getWindow().getScaledWidth() / 2 - (textRenderer.getWidth(text) / 2)) : 12, wrappedY + 5, 0xFFFFFF);
 				}
 			}
 		}

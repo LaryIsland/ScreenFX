@@ -148,7 +148,7 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "render(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
@@ -160,7 +160,7 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "render(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
@@ -175,7 +175,7 @@ public class InGameHudMixin {
 	}
 
 	@ModifyVariable(
-			method = "render",
+			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At("STORE"),
 			ordinal = 1
 	)
@@ -187,7 +187,7 @@ public class InGameHudMixin {
 	}
 
 	@Redirect(
-			method = "render",
+			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"
@@ -201,7 +201,7 @@ public class InGameHudMixin {
 	}
 
 	@Redirect(
-			method = "render",
+			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/network/ClientPlayerEntity;getFrozenTicks()I"
@@ -215,7 +215,7 @@ public class InGameHudMixin {
 	}
 
 	@Redirect(
-			method = "render",
+			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingSpyglass()Z"
