@@ -56,7 +56,7 @@ public class GameRendererMixin {
 		assert client.player != null;
 		float distortionStrength = (1f - client.options.getDistortionEffectScale().getValue().floatValue());
 		if (ScreenFXConfig.distortionMode == effectModeEnum.DYNAMIC && ScreenFXConfig.distortionTesting == 0f) {
-			distortionStrength *= MathHelper.lerp(client.getTickDelta(), client.player.prevNauseaIntensity,
+			distortionStrength *= MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), client.player.prevNauseaIntensity,
 					client.player.nauseaIntensity);
 		}
 		args.set(0, rgbArray[0] * distortionStrength * ScreenFXConfig.distortionOpacity);
@@ -78,7 +78,7 @@ public class GameRendererMixin {
 	}
 
 	@Inject(
-			method = "renderFloatingItem(IIF)V",
+			method = "renderFloatingItem",
 			at = @At("HEAD")
 	)
 	private void renderFloatingItem_disable(CallbackInfo ci) {
@@ -90,7 +90,7 @@ public class GameRendererMixin {
 	@ModifyVariable(
 			method = "render",
 			at = @At("STORE"),
-			ordinal = 2
+			index = 10
 	)
 	private float renderDistortionTesting_NauseaIntensity(float f) {
 		if (ScreenFXConfig.distortionTesting != 0) {

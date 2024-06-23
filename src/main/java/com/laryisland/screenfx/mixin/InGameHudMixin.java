@@ -148,7 +148,7 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
@@ -160,7 +160,7 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
@@ -175,9 +175,9 @@ public class InGameHudMixin {
 	}
 
 	@ModifyVariable(
-			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays",
 			at = @At("STORE"),
-			ordinal = 1
+			index = 4
 	)
 	private float renderPortalTesting(float f) {
 		if (ScreenFXConfig.portalTesting != 0f) {
@@ -187,7 +187,7 @@ public class InGameHudMixin {
 	}
 
 	@Redirect(
-			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"
@@ -201,7 +201,7 @@ public class InGameHudMixin {
 	}
 
 	@Redirect(
-			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/network/ClientPlayerEntity;getFrozenTicks()I"
@@ -215,7 +215,7 @@ public class InGameHudMixin {
 	}
 
 	@Redirect(
-			method = "renderMiscOverlays(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderMiscOverlays",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingSpyglass()Z"

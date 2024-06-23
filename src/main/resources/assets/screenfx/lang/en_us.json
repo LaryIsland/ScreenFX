@@ -14,8 +14,6 @@
 	"screenfx.distortionTesting.tooltip": "Distortion is stronger the lower you've set the video setting: Distortion Effects",
 	"screenfx.elderGuardianAnimationDuration": "Animation Duration",
 	"screenfx.elderGuardianFadeInFadeOutOpacity": "Fade In/Out Opacity",
-	"screenfx.elderGuardianFixClipping": "Fix ghost clipping through blocks",
-	"screenfx.elderGuardianFixClipping.tooltip": "Currently bugged when walking with view bobbing turned on",
 	"screenfx.elderGuardianMiningFatigueHide": "Hide when already fatigued",
 	"screenfx.elderGuardianOpacity": "Opacity",
 	"screenfx.elderGuardianScale": "Scale",

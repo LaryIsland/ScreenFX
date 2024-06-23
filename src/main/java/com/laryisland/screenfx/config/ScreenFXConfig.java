@@ -90,8 +90,6 @@ public class ScreenFXConfig extends MidnightConfig {
 	@Entry(category = "entity", isSlider = true, min = 1, max = 120)
 	public static int elderGuardianAnimationDuration = 30;
 	@Entry(category = "entity")
-	public static boolean elderGuardianFixClipping = false;
-	@Entry(category = "entity")
 	public static boolean elderGuardianMiningFatigueHide = false;
 
 	@Comment(category = "entity", centered = true)

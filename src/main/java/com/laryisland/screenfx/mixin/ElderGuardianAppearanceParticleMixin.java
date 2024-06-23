@@ -26,15 +26,8 @@ public abstract class ElderGuardianAppearanceParticleMixin {
 			)
 	)
 	private void elderGuardianScale(Args args) {
-		if (ScreenFXConfig.elderGuardianFixClipping) {
-			final float CAMERA_PROXIMITY_MULTIPLIER = 0.12f;
-			args.set(0, -ScreenFXConfig.elderGuardianScale * CAMERA_PROXIMITY_MULTIPLIER);
-			args.set(1, -ScreenFXConfig.elderGuardianScale * CAMERA_PROXIMITY_MULTIPLIER);
-			args.set(2, CAMERA_PROXIMITY_MULTIPLIER);
-		} else {
 			args.set(0, -ScreenFXConfig.elderGuardianScale);
 			args.set(1, -ScreenFXConfig.elderGuardianScale);
-		}
 	}
 
 	@ModifyConstant(
@@ -70,7 +63,7 @@ public abstract class ElderGuardianAppearanceParticleMixin {
 	@ModifyVariable(
 			method = "buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V",
 			at = @At("STORE"),
-			ordinal = 1
+			index = 4
 	)
 	private float elderGuardianClampOpacity(float f) {
 		return MathHelper.clamp(f, 0f, 1f);
