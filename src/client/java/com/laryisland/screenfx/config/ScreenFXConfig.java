@@ -73,6 +73,8 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static Comment inWallSettings;
 	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
 	public static float inWallBrightness = 0.1f;
+	@Entry(category = "overlay", isSlider = true, min = 0f, max = 1f)
+	public static float inWallOpacity = 1f;
 
 	@Comment(category = "overlay", centered = true)
 	public static Comment underwaterSettings;

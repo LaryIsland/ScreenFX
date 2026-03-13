@@ -2,36 +2,32 @@ package com.laryisland.screenfx.mixin;
 
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import java.util.List;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ItemInHandRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import com.mojang.math.Axis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(HeldItemRenderer.class)
-public class HeldItemRendererMixin {
+@Mixin(ItemInHandRenderer.class)
+public class ItemInHandRendererMixin {
 
 	@Inject(
-			method = "renderFirstPersonItem",
+			method = "renderArmWithItem",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
-					shift = Shift.BEFORE
-			),
-			locals = LocalCapture.CAPTURE_FAILSOFT
+					target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
+			)
 	)
-	private void renderHeldItem_matrixManipulation(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand,
-			float swingProgress, ItemStack itemStack, float equipProgress, MatrixStack matrices,
-			VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+	private void renderHeldItem_matrixManipulation(AbstractClientPlayer player, float tickDelta, float pitch, InteractionHand hand,
+			float swingProgress, ItemStack itemStack, float equipProgress, PoseStack matrices,
+			MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
 		float transX, transY, transZ, scale, rotX, rotY, rotZ;
 		if (ScreenFXConfig.uniqueHeldItemMap.containsKey(itemStack.getItem().toString().substring(10))) {
 			List<Float> specificItemConfig = ScreenFXConfig.uniqueHeldItemMap.get(itemStack.getItem().toString().substring(10));
@@ -43,12 +39,12 @@ public class HeldItemRendererMixin {
 			rotY = specificItemConfig.get(5);
 			rotZ = specificItemConfig.get(6);
 		}
-		else if (Item.BLOCK_ITEMS.containsValue(itemStack.getItem())) {
+		else if (Item.BY_BLOCK.containsValue(itemStack.getItem())) {
 			transY = ScreenFXConfig.heldBlockMainHandTranslationAxisY;
 			transZ = ScreenFXConfig.heldBlockMainHandTranslationAxisZ;
 			scale = ScreenFXConfig.heldBlockMainHandScale;
 			rotX = ScreenFXConfig.heldBlockMainHandRotationAxisX;
-			if (hand == Hand.MAIN_HAND) {
+			if (hand == InteractionHand.MAIN_HAND) {
 				transX = ScreenFXConfig.heldBlockMainHandTranslationAxisX;
 				rotY = ScreenFXConfig.heldBlockMainHandRotationAxisY;
 				rotZ = ScreenFXConfig.heldBlockMainHandRotationAxisZ;
@@ -70,7 +66,7 @@ public class HeldItemRendererMixin {
 			transZ = ScreenFXConfig.heldItemMainHandTranslationAxisZ;
 			scale = ScreenFXConfig.heldItemMainHandScale;
 			rotX = ScreenFXConfig.heldItemMainHandRotationAxisX;
-			if (hand == Hand.MAIN_HAND) {
+			if (hand == InteractionHand.MAIN_HAND) {
 				transX = ScreenFXConfig.heldItemMainHandTranslationAxisX;
 				rotY = ScreenFXConfig.heldItemMainHandRotationAxisY;
 				rotZ = ScreenFXConfig.heldItemMainHandRotationAxisZ;
@@ -90,8 +86,8 @@ public class HeldItemRendererMixin {
 		}
 		matrices.translate(transX, transY, transZ);
 		matrices.scale(scale, scale, scale);
-		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotX));
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotY));
-		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotZ));
+		matrices.mulPose(Axis.XP.rotationDegrees(rotX));
+		matrices.mulPose(Axis.YP.rotationDegrees(rotY));
+		matrices.mulPose(Axis.ZP.rotationDegrees(rotZ));
 	}
 }

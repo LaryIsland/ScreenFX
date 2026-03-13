@@ -5,13 +5,13 @@ import static com.laryisland.screenfx.ScreenFX.validColour;
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import java.awt.Color;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.Holder;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,18 +29,18 @@ public class GameRendererMixin {
 
 	@Shadow
 	@Final
-	MinecraftClient client;
+	Minecraft minecraft;
 	@Shadow
-	private int floatingItemTimeLeft;
+	private int itemActivationTicks;
 	@Unique
 	private static boolean singleGuardian = true;
 
 
 	@ModifyArgs(
-			method = "renderNausea(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderConfusionOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V",
 					ordinal = 0
 			)
 	)
@@ -53,11 +53,12 @@ public class GameRendererMixin {
 			rgbArray[1] = args.get(1);
 			rgbArray[2] = args.get(2);
 		}
-		assert client.player != null;
-		float distortionStrength = (1f - client.options.getDistortionEffectScale().getValue().floatValue());
+		assert minecraft.player != null;
+		float distortionStrength = (1f - minecraft.options.screenEffectScale().get().floatValue());
 		if (ScreenFXConfig.distortionMode == effectModeEnum.DYNAMIC && ScreenFXConfig.distortionTesting == 0f) {
-			distortionStrength *= MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), client.player.prevNauseaIntensity,
-					client.player.nauseaIntensity);
+			distortionStrength *= Mth.lerp(
+				minecraft.getTimer().getGameTimeDeltaPartialTick(false), minecraft.player.oSpinningEffectIntensity,
+					minecraft.player.spinningEffectIntensity);
 		}
 		args.set(0, rgbArray[0] * distortionStrength * ScreenFXConfig.distortionOpacity);
 		args.set(1, rgbArray[1] * distortionStrength * ScreenFXConfig.distortionOpacity);
@@ -65,7 +66,7 @@ public class GameRendererMixin {
 	}
 
 	@ModifyVariable(
-			method = "renderNausea",
+			method = "renderConfusionOverlay",
 			at = @At("STORE"),
 			ordinal = 1
 	)
@@ -78,12 +79,12 @@ public class GameRendererMixin {
 	}
 
 	@Inject(
-			method = "renderFloatingItem",
+			method = "renderItemActivationAnimation",
 			at = @At("HEAD")
 	)
 	private void renderFloatingItem_disable(CallbackInfo ci) {
 		if (ScreenFXConfig.totemOfUndyingDisable) {
-			this.floatingItemTimeLeft = 0;
+			this.itemActivationTicks = 0;
 		}
 	}
 
@@ -107,14 +108,14 @@ public class GameRendererMixin {
 			method = "render",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)Z"
+					target = "Lnet/minecraft/client/player/LocalPlayer;hasEffect(Lnet/minecraft/core/Holder;)Z"
 			)
 	)
-	private boolean renderDistortionTesting_NauseaCheck(ClientPlayerEntity instance, RegistryEntry<StatusEffect> statusEffect) {
+	private boolean renderDistortionTesting_NauseaCheck(LocalPlayer instance, Holder<MobEffect> statusEffect) {
 		if (ScreenFXConfig.distortionTesting != 0) {
 			return true;
 		}
-		return instance.hasStatusEffect(statusEffect);
+		return instance.hasEffect(statusEffect);
 	}
 
 	@Inject(
@@ -122,10 +123,10 @@ public class GameRendererMixin {
 			at = @At("TAIL")
 	)
 	private void renderElderGuardianTesting(CallbackInfo ci) {
-		if (ScreenFXConfig.elderGuardianTesting && singleGuardian && MinecraftClient.getInstance().world != null
-				&& MinecraftClient.getInstance().player != null) {
-			ClientPlayerEntity playerEntity = MinecraftClient.getInstance().player;
-			MinecraftClient.getInstance().world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(),
+		if (ScreenFXConfig.elderGuardianTesting && singleGuardian && Minecraft.getInstance().level != null
+				&& Minecraft.getInstance().player != null) {
+			LocalPlayer playerEntity = Minecraft.getInstance().player;
+			Minecraft.getInstance().level.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(),
 					playerEntity.getY(), playerEntity.getZ(), 0.0, 0.0, 0.0);
 			singleGuardian = false;
 		}

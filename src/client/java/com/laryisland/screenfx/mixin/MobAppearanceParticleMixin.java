@@ -1,12 +1,12 @@
 package com.laryisland.screenfx.mixin;
 
-import static net.minecraft.entity.effect.StatusEffects.MINING_FATIGUE;
+import static net.minecraft.world.effect.MobEffects.DIG_SLOWDOWN;
 
 import com.laryisland.screenfx.config.ScreenFXConfig;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.particle.ElderGuardianAppearanceParticle;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.particle.MobAppearanceParticle;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -15,14 +15,14 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-@Mixin(ElderGuardianAppearanceParticle.class)
-public abstract class ElderGuardianAppearanceParticleMixin {
+@Mixin(MobAppearanceParticle.class)
+public abstract class MobAppearanceParticleMixin {
 
 	@ModifyArgs(
-			method = "buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V",
+			method = "render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/util/math/MatrixStack;scale(FFF)V"
+					target = "Lcom/mojang/blaze3d/vertex/PoseStack;scale(FFF)V"
 			)
 	)
 	private void elderGuardianScale(Args args) {
@@ -31,13 +31,13 @@ public abstract class ElderGuardianAppearanceParticleMixin {
 	}
 
 	@ModifyConstant(
-			method = "<init>(Lnet/minecraft/client/world/ClientWorld;DDD)V",
+			method = "<init>(Lnet/minecraft/client/multiplayer/ClientLevel;DDD)V",
 			constant = @Constant(intValue = 30)
 	)
 	private int elderGuardianAnimationDuration(int value) {
 		if (ScreenFXConfig.elderGuardianMiningFatigueHide) {
-			ClientPlayerEntity player = MinecraftClient.getInstance().player;
-			if (player != null && player.hasStatusEffect(MINING_FATIGUE)) {
+			LocalPlayer player = Minecraft.getInstance().player;
+			if (player != null && player.hasEffect(DIG_SLOWDOWN)) {
 				return 0;
 			}
 		}
@@ -45,7 +45,7 @@ public abstract class ElderGuardianAppearanceParticleMixin {
 	}
 
 	@ModifyConstant(
-			method = "buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V",
+			method = "render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
 			constant = @Constant(floatValue = 0.05f)
 	)
 	private float elderGuardianFadeInFadeOutOpacity(float value) {
@@ -53,7 +53,7 @@ public abstract class ElderGuardianAppearanceParticleMixin {
 	}
 
 	@ModifyConstant(
-			method = "buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V",
+			method = "render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
 			constant = @Constant(floatValue = 0.5f)
 	)
 	private float elderGuardianOpacity(float g) {
@@ -61,11 +61,11 @@ public abstract class ElderGuardianAppearanceParticleMixin {
 	}
 
 	@ModifyVariable(
-			method = "buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V",
+			method = "render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
 			at = @At("STORE"),
 			index = 4
 	)
 	private float elderGuardianClampOpacity(float f) {
-		return MathHelper.clamp(f, 0f, 1f);
+		return Mth.clamp(f, 0f, 1f);
 	}
 }

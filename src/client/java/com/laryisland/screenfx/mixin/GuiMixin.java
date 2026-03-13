@@ -6,11 +6,11 @@ import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.awt.Color;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,19 +24,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-@Mixin(InGameHud.class)
-public class InGameHudMixin {
+@Mixin(Gui.class)
+public class GuiMixin {
 
 	@Unique
 	private static float opacity = 1f;
 	@Shadow
-	public float vignetteDarkness;
+	public float vignetteBrightness;
 
 	@ModifyArg(
-			method = "renderPortalOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderPortalOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V",
 					ordinal = 0
 			),
 			index = 3
@@ -49,10 +49,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;fill(Lnet/minecraft/client/render/RenderLayer;IIIIII)V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;fill(Lnet/minecraft/client/renderer/RenderType;IIIIII)V"
 			),
 			index = 6
 	)
@@ -67,11 +67,10 @@ public class InGameHudMixin {
 	}
 
 	@Inject(
-			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIFFIIII)V",
-					shift = Shift.BEFORE
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIFFIIII)V"
 			)
 	)
 	private void renderSpyglassOverlay_textureOpacity(CallbackInfo ci) {
@@ -79,10 +78,10 @@ public class InGameHudMixin {
 	}
 
 	@Inject(
-			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/DrawContext;F)V",
+			method = "renderSpyglassOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIFFIIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIFFIIII)V",
 					shift = Shift.AFTER
 			)
 	)
@@ -91,10 +90,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArgs(
-			method = "renderVignetteOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/Entity;)V",
+			method = "renderVignette(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/Entity;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V",
 					ordinal = 1
 			)
 	)
@@ -109,7 +108,7 @@ public class InGameHudMixin {
 		}
 		opacity = ScreenFXConfig.vignetteOpacity;
 		if (ScreenFXConfig.vignetteMode == effectModeEnum.DYNAMIC) {
-			opacity *= MathHelper.clamp(this.vignetteDarkness, 0.0F, 1.0F);
+			opacity *= Mth.clamp(this.vignetteBrightness, 0.0F, 1.0F);
 		}
 		args.set(0, (1f - rgbArray[0]) * opacity);
 		args.set(1, (1f - rgbArray[1]) * opacity);
@@ -117,10 +116,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArgs(
-			method = "renderVignetteOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/Entity;)V",
+			method = "renderVignette(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/Entity;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V",
 					ordinal = 0
 			)
 	)
@@ -148,10 +147,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "renderMiscOverlays",
+			method = "renderCameraOverlays",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
+					target = "Lnet/minecraft/client/gui/Gui;renderTextureOverlay(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;F)V",
 					ordinal = 0
 			)
 	)
@@ -160,10 +159,10 @@ public class InGameHudMixin {
 	}
 
 	@ModifyArg(
-			method = "renderMiscOverlays",
+			method = "renderCameraOverlays",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/Identifier;F)V",
+					target = "Lnet/minecraft/client/gui/Gui;renderTextureOverlay(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;F)V",
 					ordinal = 1
 			)
 	)
@@ -175,7 +174,7 @@ public class InGameHudMixin {
 	}
 
 	@ModifyVariable(
-			method = "renderMiscOverlays",
+			method = "renderCameraOverlays",
 			at = @At("STORE"),
 			index = 4
 	)
@@ -187,44 +186,44 @@ public class InGameHudMixin {
 	}
 
 	@Redirect(
-			method = "renderMiscOverlays",
+			method = "renderCameraOverlays",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"
+					target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"
 			)
 	)
 	private boolean renderPumpkinBlurTesting(ItemStack instance, Item item) {
 		if (ScreenFXConfig.pumpkinTesting) {
 			return true;
 		}
-		return instance.isOf(item);
+		return instance.is(item);
 	}
 
 	@Redirect(
-			method = "renderMiscOverlays",
+			method = "renderCameraOverlays",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/network/ClientPlayerEntity;getFrozenTicks()I"
+					target = "Lnet/minecraft/client/player/LocalPlayer;getTicksFrozen()I"
 			)
 	)
-	private int renderPowerSnowTesting(ClientPlayerEntity instance) {
+	private int renderPowerSnowTesting(LocalPlayer instance) {
 		if (ScreenFXConfig.powerSnowTesting != 0f) {
 			return 1;
 		}
-		return instance.getFrozenTicks();
+		return instance.getTicksFrozen();
 	}
 
 	@Redirect(
-			method = "renderMiscOverlays",
+			method = "renderCameraOverlays",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingSpyglass()Z"
+					target = "Lnet/minecraft/client/player/LocalPlayer;isScoping()Z"
 			)
 	)
-	private boolean renderSpyglassTesting(ClientPlayerEntity instance) {
+	private boolean renderSpyglassTesting(LocalPlayer instance) {
 		if (ScreenFXConfig.spyglassTesting) {
 			return true;
 		}
-		return instance.isUsingSpyglass();
+		return instance.isScoping();
 	}
 }

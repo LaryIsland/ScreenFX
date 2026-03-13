@@ -24,7 +24,10 @@
 		]
 	},
 	"mixins": [
-		"screenfx.mixins.json"
+		{
+			"config": "screenfx.mixins.json",
+			"environment": "client"
+		}
 	],
 	"depends": {
 		"minecraft": ">=1.21",

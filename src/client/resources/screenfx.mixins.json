@@ -3,11 +3,11 @@
 	"package": "com.laryisland.screenfx.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ElderGuardianAppearanceParticleMixin",
+		"MobAppearanceParticleMixin",
 		"GameRendererMixin",
-		"HeldItemRendererMixin",
-		"InGameHudMixin",
-		"InGameOverlayRendererMixin"
+		"ItemInHandRendererMixin",
+		"GuiMixin",
+		"ScreenEffectRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
