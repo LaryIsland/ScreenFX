@@ -53,9 +53,8 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
-import org.jetbrains.annotations.NotNull;
 //? if >= 1.21.9
-//import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.KeyEvent;
 
 // MidnightConfig v2.5.2
 
@@ -325,7 +324,7 @@ public abstract class MidnightConfig {
 				fillList();
 				list.setScrollAmount(0);
 			}
-			scrollProgress = /*? < 1.21.4 {*/ list.getScrollAmount() /*?} else {*/ /*list.scrollAmount() *//*?}*/;
+			scrollProgress = /*? < 1.21.4 {*/ /*list.getScrollAmount() *//*?} else {*/ list.scrollAmount() /*?}*/;
 			for (EntryInfo info : entries) {
 				try {info.field.set(null, info.value);} catch (IllegalAccessException ignored) {}
 			}
@@ -359,14 +358,14 @@ public abstract class MidnightConfig {
 		}
 		@Override
 //? if <= 1.21.8 {
-		public boolean keyPressed(int key, int scanCode, int modifiers) {
+		/*public boolean keyPressed(int key, int scanCode, int modifiers) {
         	return this.tabNavigation.keyPressed(key) || super.keyPressed(key, scanCode, modifiers);
    	 	}
-//?} else {
-		/*public boolean keyPressed(@NonNull KeyEvent input) {
+*///?} else {
+		public boolean keyPressed(KeyEvent input) {
 			return this.tabNavigation.keyPressed(input) || super.keyPressed(input);
 		}
-*///?}
+//?}
 
 		@Override
 		public void init() {
@@ -548,10 +547,10 @@ public abstract class MidnightConfig {
 		}
 		@Override
 //? if >= 1.21.4 {
-		/*public int scrollBarX() {
-*///?} else {
-		public int getScrollbarPosition() {
- //?}
+		public int scrollBarX() {
+//?} else {
+		/*public int getScrollbarPosition() {
+ *///?}
 			return this.width - 7;
 		}
 
@@ -576,11 +575,11 @@ public abstract class MidnightConfig {
 			this.info = info;
 		}
 //? if <= 1.21.8 {
-		public void render(GuiGraphics context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-//?} else {
-		/*public void renderContent(@NonNull GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		/*public void render(GuiGraphics context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+*///?} else {
+		public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int y = this.getY();
-*///?}
+//?}
 			buttons.forEach(b -> { b.setY(y); b.render(context, mouseX, mouseY, tickDelta); });
 			if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
 				int wrappedY = y;
@@ -590,8 +589,8 @@ public abstract class MidnightConfig {
 				}
 			}
 		}
-		public @NotNull List<? extends GuiEventListener> children() {return Lists.newArrayList(buttons);}
-		public @NotNull List<? extends NarratableEntry> narratables() {return Lists.newArrayList(buttons);}
+		public List<? extends GuiEventListener> children() {return Lists.newArrayList(buttons);}
+		public List<? extends NarratableEntry> narratables() {return Lists.newArrayList(buttons);}
 	}
 	private static class MidnightSliderWidget extends AbstractSliderButton {
 		private final EntryInfo info; private final Entry e;

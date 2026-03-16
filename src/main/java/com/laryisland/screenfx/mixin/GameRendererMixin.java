@@ -1,8 +1,8 @@
 //? if <= 1.21.5 {
-package com.laryisland.screenfx.mixin;
+/*package com.laryisland.screenfx.mixin;
 
 //? if <=1.21.1 {
-import static com.laryisland.screenfx.ScreenFX.validColour;
+/^import static com.laryisland.screenfx.ScreenFX.validColour;
 
 import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -10,7 +10,7 @@ import java.awt.Color;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-//?}
+^///?}
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import com.laryisland.screenfx.config.ScreenFXConfig;
@@ -26,7 +26,7 @@ public class GameRendererMixin {
 	private int itemActivationTicks;
 //? if <=1.21.1 {
 
-	@ModifyArgs(
+	/^@ModifyArgs(
 		method = "renderConfusionOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V",
 		at = @At(
 			value = "INVOKE",
@@ -88,7 +88,7 @@ public class GameRendererMixin {
 	private boolean renderDistortionTesting_NauseaCheck(boolean original) {
 		return ScreenFXConfig.distortionTesting != 0f || original;
 	}
-//?}
+^///?}
 
 	@Inject(
 		method = "renderItemActivationAnimation",
@@ -100,4 +100,4 @@ public class GameRendererMixin {
 		}
 	}
 }
-//?}
+*///?}

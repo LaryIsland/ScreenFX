@@ -1,5 +1,5 @@
 //? if >= 1.21.9 {
-/*package com.laryisland.screenfx.mixin;
+package com.laryisland.screenfx.mixin;
 
 import static net.minecraft.world.effect.MobEffects.MINING_FATIGUE;
 
@@ -32,4 +32,4 @@ public abstract class ElderGuardianParticleMixin {
 		return (int) (value * ScreenFXConfig.elderGuardianAnimationDuration);
 	}
 }
-*///?}
+//?}

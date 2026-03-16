@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? if <= 1.21.8 {
-import net.minecraft.client.renderer.MultiBufferSource;
- //?} else
-//import net.minecraft.client.renderer.SubmitNodeCollector;
+/*import net.minecraft.client.renderer.MultiBufferSource;
+ *///?} else
+import net.minecraft.client.renderer.SubmitNodeCollector;
 
 @Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin {
@@ -26,11 +26,11 @@ public class ItemInHandRendererMixin {
 		at = @At(
 			value = "INVOKE",
 //? if <= 1.21.4 {
-			target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-//?} else if <= 1.21.8 {
+			/*target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+*///?} else if <= 1.21.8 {
 			/*target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
 *///?} else
-			//target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
+			target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
 			ordinal = 1
 		)
 	)
@@ -45,9 +45,9 @@ public class ItemInHandRendererMixin {
 		float equipProgress,
 		PoseStack matrices,
 //? if <= 1.21.8 {
-		MultiBufferSource vertexConsumers,
-//?} else
-		//SubmitNodeCollector submitNodeCollector,
+		/*MultiBufferSource vertexConsumers,
+*///?} else
+		SubmitNodeCollector submitNodeCollector,
 		int light,
 		CallbackInfo ci
 	) {

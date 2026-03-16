@@ -20,20 +20,20 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 //? if != 1.21.4 != 1.21.5
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? if >= 1.21.6
-//import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Shadow;
 //? if <=1.21.3 {
-import com.mojang.blaze3d.systems.RenderSystem;
+/*import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-//?}
+*///?}
 
 @Mixin(ScreenEffectRenderer.class)
 public abstract class ScreenEffectRendererMixin {
 
 //? if >= 1.21.6 {
-	/*@Shadow
+	@Shadow
 	private int itemActivationTicks;
-*///?}
+//?}
 
 	@ModifyArg(
 		method = "renderFire",
@@ -71,11 +71,11 @@ public abstract class ScreenEffectRendererMixin {
 		at = @At(
 			value = "INVOKE",
 //? if <=1.21.3 {
-			target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
-//?} else
-			//target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"
+			/*target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
+*///?} else
+			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"
 		),
-		index = 0
+		index = /*? if <=1.21.3 {*/ /*3 *//*?} else*/ 0
 	)
 	private static float renderUnderwaterOverlay(float alpha) {
 		return ScreenFXConfig.underwaterOpacity;
@@ -86,30 +86,30 @@ public abstract class ScreenEffectRendererMixin {
 		at = @At(
 			value = "INVOKE",
 //? if <=1.21.3 {
-			target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
-//?} else
-			//target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"
+			/*target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
+*///?} else
+			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"
 		)
 	)
 	private static void renderInWallOverlay(Args args) {
 		args.setAll(
 //? if >=1.21.4
-			//ScreenFXConfig.inWallOpacity,
+			ScreenFXConfig.inWallOpacity,
 			ScreenFXConfig.inWallBrightness,
 			ScreenFXConfig.inWallBrightness,
 			ScreenFXConfig.inWallBrightness
 //? if <=1.21.3
-			,ScreenFXConfig.inWallOpacity
+			//,ScreenFXConfig.inWallOpacity
 		);
 	}
 
 //? if <=1.21.3 {
-	@Inject(
+	/*@Inject(
 		method = "renderTex",
 		at = @At("HEAD")
 	)
 	private static void renderInWallOverlay_opacityBegin(TextureAtlasSprite atlas, PoseStack pose, CallbackInfo ci) {
-		RenderSystem.setShaderColor(1f, 1f, 1f, ScreenFXConfig.inWallOpacity);
+		RenderSystem.enableBlend();
 	}
 
 	@Inject(
@@ -117,9 +117,9 @@ public abstract class ScreenEffectRendererMixin {
 		at = @At("TAIL")
 	)
 	private static void renderInWallOverlay_opacityEnd(TextureAtlasSprite atlas, PoseStack pose, CallbackInfo ci) {
-		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+		RenderSystem.disableBlend();
 	}
-//?}
+*///?}
 
 	@ModifyExpressionValue(
 		method = "renderScreenEffect",
@@ -155,7 +155,7 @@ public abstract class ScreenEffectRendererMixin {
 	}
 
 //? if >= 1.21.6 {
-	/*@Inject(
+	@Inject(
 		method = "renderItemActivationAnimation",
 		at = @At("HEAD")
 	)
@@ -164,5 +164,5 @@ public abstract class ScreenEffectRendererMixin {
 			this.itemActivationTicks = 0;
 		}
 	}
-*///?}
+//?}
 }

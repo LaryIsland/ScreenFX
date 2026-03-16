@@ -28,7 +28,7 @@ dependencies {
 }
 
 loom {
-	//fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
+	fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
 	//accessWidenerPath = rootProject.file("src/main/resources/screenfx.accesswidener")
 
 	decompilerOptions.named("vineflower") {
@@ -63,8 +63,6 @@ tasks {
 		)
 
 		filesMatching("fabric.mod.json") { expand(props) }
-
-		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 		val mixinJava = "JAVA_${requiredJava.majorVersion}"
 		filesMatching("*.mixins.json") { expand("java" to mixinJava) }

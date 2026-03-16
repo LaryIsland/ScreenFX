@@ -1,5 +1,5 @@
 //? if >= 1.21.9 {
-/*package com.laryisland.screenfx.mixin;
+package com.laryisland.screenfx.mixin;
 
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import net.minecraft.client.particle.ElderGuardianParticleGroup;
@@ -45,4 +45,4 @@ public abstract class ElderGuardianParticleGroupMixin {
 		}
 	}
 }
-*///?}
+//?}
