@@ -3,17 +3,10 @@
 	"package": "com.laryisland.screenfx.mixin",
 	"compatibilityLevel": "${java}",
 	"client": [
-		"ItemInHandRendererMixin",
-		"GuiMixin",
-		"ScreenEffectRendererMixin",
-		"MobAppearanceParticleMixin"
-//? if <= 1.21.5 {
-		,"GameRendererMixin"
-//?} else {
-		,"ElderGuardianParticleMixin"
-		,"ElderGuardianParticleGroupMixin"
-		,"ElderGuardianParticleGroupMixin\$ElderGuardianRenderStateMixin"
-//?}
+		"ItemInHandRendererMixin"
+		,"GuiMixin"
+		,"ScreenEffectRendererMixin"
+${mixinList}
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -64,8 +64,21 @@ tasks {
 
 		filesMatching("fabric.mod.json") { expand(props) }
 
+		val mixinList = buildString {
+			if (stonecutter.compare(stonecutter.current.version, "1.21.9") >= 0) {
+				appendLine("""		,"ElderGuardianParticleMixin"""")
+				appendLine("""		,"ElderGuardianParticleGroupMixin"""")
+				append("""		,"ElderGuardianParticleGroupMixin${'$'}ElderGuardianRenderStateMixin"""")
+			} else {
+				if (stonecutter.compare(stonecutter.current.version, "1.21.5") <= 0) {
+					appendLine("""		,"GameRendererMixin"""")
+				}
+				append("""		,"MobAppearanceParticleMixin"""")
+			}
+		}
+
 		val mixinJava = "JAVA_${requiredJava.majorVersion}"
-		filesMatching("*.mixins.json") { expand("java" to mixinJava) }
+		filesMatching("*.mixins.json") { expand("java" to mixinJava, "mixinList" to mixinList) }
 	}
 
 	register<Copy>("buildAndCollect") {
