@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "com.laryisland.screenfx.mixin",
+	"compatibilityLevel": "${java}",
+	"client": [
+		"ItemInHandRendererMixin",
+		"GuiMixin",
+		"ScreenEffectRendererMixin",
+		"ElderGuardianParticleMixin",
+		"ElderGuardianParticleGroupMixin",
+		"ElderGuardianParticleGroupMixin\$ElderGuardianRenderStateMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

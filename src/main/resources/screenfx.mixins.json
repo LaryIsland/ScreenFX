@@ -1,13 +1,13 @@
 {
 	"required": true,
 	"package": "com.laryisland.screenfx.mixin",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "${java}",
 	"client": [
-		"MobAppearanceParticleMixin",
-		"GameRendererMixin",
 		"ItemInHandRendererMixin",
 		"GuiMixin",
-		"ScreenEffectRendererMixin"
+		"ScreenEffectRendererMixin",
+		"MobAppearanceParticleMixin",
+		"GameRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

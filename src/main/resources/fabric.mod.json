@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "screenfx",
+	"id": "${id}",
 	"version": "${version}",
-	"name": "ScreenFX",
+	"name": "${name}",
 	"description": "A client-side, resource pack compatible, quality of life fabric mod for changing overlays and screen effects",
 	"authors": [
 		"LaryIsland"
@@ -30,7 +30,7 @@
 		}
 	],
 	"depends": {
-		"minecraft": ">=1.21",
-		"java": ">=21"
+		"fabricloader": ">=0.17",
+		"minecraft": "${minecraft}"
 	}
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -53,6 +54,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import org.jetbrains.annotations.NotNull;
+//? if >= 1.21.9
+//import net.minecraft.client.input.KeyEvent;
 
 // MidnightConfig v2.5.2
 
@@ -64,6 +67,8 @@ public abstract class MidnightConfig {
 
 	private static final List<EntryInfo> entries = new ArrayList<>();
 	private static final Map<String, List<EntryInfo>> mapEntries = new LinkedHashMap<>();
+
+	public static final List<Consumer<String>> ON_CLICK_LISTENERS = new ArrayList<>();
 
 	public static class EntryInfo {
 		Field field;
@@ -171,6 +176,7 @@ public abstract class MidnightConfig {
 				info.widget = new AbstractMap.SimpleEntry<Button.OnPress, Function<Object, Component>>(button -> {
 					info.value = !(Boolean) info.value;
 					button.setMessage(func.apply(info.value));
+					ON_CLICK_LISTENERS.forEach(l -> l.accept(info.field.getName()));
 				}, func);
 			} else if (type.isEnum()) {
 				List<?> values = Arrays.asList(field.getType().getEnumConstants());
@@ -319,7 +325,7 @@ public abstract class MidnightConfig {
 				fillList();
 				list.setScrollAmount(0);
 			}
-			scrollProgress = list.getScrollAmount();
+			scrollProgress = /*? < 1.21.4 {*/ list.getScrollAmount() /*?} else {*/ /*list.scrollAmount() *//*?}*/;
 			for (EntryInfo info : entries) {
 				try {info.field.set(null, info.value);} catch (IllegalAccessException ignored) {}
 			}
@@ -352,10 +358,16 @@ public abstract class MidnightConfig {
 			}
 		}
 		@Override
-		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-			if (this.tabNavigation.keyPressed(keyCode)) return true;
-			return super.keyPressed(keyCode, scanCode, modifiers);
+//? if <= 1.21.8 {
+		public boolean keyPressed(int key, int scanCode, int modifiers) {
+        	return this.tabNavigation.keyPressed(key) || super.keyPressed(key, scanCode, modifiers);
+   	 	}
+//?} else {
+		/*public boolean keyPressed(@NonNull KeyEvent input) {
+			return this.tabNavigation.keyPressed(input) || super.keyPressed(input);
 		}
+*///?}
+
 		@Override
 		public void init() {
 			super.init();
@@ -525,7 +537,7 @@ public abstract class MidnightConfig {
 			super.render(context, mouseX, mouseY, delta);
 			this.list.render(context, mouseX, mouseY, delta);
 
-			if (tabs.size() < 2) context.drawCenteredString(font, title, width / 2, 10, 0xFFFFFF);
+			if (tabs.size() < 2) context.drawCenteredString(font, title, width / 2, 10, -1);
 		}
 	}
 
@@ -535,7 +547,13 @@ public abstract class MidnightConfig {
 			super(client, width, height, y, itemHeight);
 		}
 		@Override
-		public int getScrollbarPosition() { return this.width -7; }
+//? if >= 1.21.4 {
+		/*public int scrollBarX() {
+*///?} else {
+		public int getScrollbarPosition() {
+ //?}
+			return this.width - 7;
+		}
 
 		protected void addButton(List<AbstractWidget> buttons, Component text, EntryInfo info) {
 			this.addEntry(new ButtonEntry(buttons, text, info));
@@ -544,7 +562,7 @@ public abstract class MidnightConfig {
 		@Override
 		public int getRowWidth() { return 10000; }
 	}
-	public static class ButtonEntry extends net.minecraft.client.gui.components.ContainerObjectSelectionList.Entry<ButtonEntry> {
+	public static class ButtonEntry extends ContainerObjectSelectionList.Entry<ButtonEntry> {
 		private static final Font textRenderer = Minecraft.getInstance().font;
 		public final List<AbstractWidget> buttons;
 		private final Component text;
@@ -557,13 +575,18 @@ public abstract class MidnightConfig {
 			this.text = text;
 			this.info = info;
 		}
+//? if <= 1.21.8 {
 		public void render(GuiGraphics context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+//?} else {
+		/*public void renderContent(@NonNull GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			int y = this.getY();
+*///?}
 			buttons.forEach(b -> { b.setY(y); b.render(context, mouseX, mouseY, tickDelta); });
 			if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
 				int wrappedY = y;
 				for(Iterator<FormattedCharSequence> textIterator = textRenderer.split(text, (buttons.size() > 1 ? buttons.get(1).getX()-24 : Minecraft.getInstance().getWindow().getGuiScaledWidth() - 24)).iterator(); textIterator.hasNext(); wrappedY += 9) {
 					context.drawString(textRenderer, textIterator.next(), (info.centered) ? (
-						Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - (textRenderer.width(text) / 2)) : 12, wrappedY + 5, 0xFFFFFF);
+						Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - (textRenderer.width(text) / 2)) : 12, wrappedY + 5, -1);
 				}
 			}
 		}

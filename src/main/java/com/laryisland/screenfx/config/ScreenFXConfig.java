@@ -89,8 +89,8 @@ public class ScreenFXConfig extends MidnightConfig {
 	public static float elderGuardianOpacity = 0.5f;
 	@Entry(category = "entity", isSlider = true, min = 0f, max = 2f)
 	public static float elderGuardianScale = 1f;
-	@Entry(category = "entity", isSlider = true, min = 1, max = 120)
-	public static int elderGuardianAnimationDuration = 30;
+	@Entry(category = "entity", isSlider = true, min = 0f, max = 4f)
+	public static float elderGuardianAnimationDuration = 1f;
 	@Entry(category = "entity")
 	public static boolean elderGuardianMiningFatigueHide = false;
 
