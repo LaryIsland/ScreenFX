@@ -1,12 +1,12 @@
 plugins {
-	id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
+	id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT"
 }
 
 version = "${property("mod.version")}+${sc.current.version}"
 base.archivesName = property("mod.id") as String
 
 val requiredJava = when {
-	sc.current.parsed >= "26.1-rc-2" -> JavaVersion.VERSION_25
+	sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
 	else -> JavaVersion.VERSION_21
 }
 
@@ -15,9 +15,16 @@ repositories {
 }
 
 dependencies {
+	fun fapi(vararg modules: String) {
+		for (it in modules) modImplementation(fabricApi.module(it, property("fabric_api") as String))
+	}
+
 	minecraft("com.mojang:minecraft:${sc.current.version}")
-	implementation("net.fabricmc:fabric-loader:${property("fabric_loader")}")
-	implementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
+	mappings(loom.officialMojangMappings())
+	modImplementation("net.fabricmc:fabric-loader:${property("fabric_loader")}")
+	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
+
+	fapi("fabric-screen-api-v1", "fabric-key-binding-api-v1", "fabric-lifecycle-events-v1", "fabric-resource-loader-v0")
 }
 
 loom {
@@ -58,9 +65,16 @@ tasks {
 		filesMatching("fabric.mod.json") { expand(props) }
 
 		val mixinList = buildString {
-			appendLine("""		,"ElderGuardianParticleMixin"""")
-			appendLine("""		,"ElderGuardianParticleGroupMixin"""")
-			append("""		,"ElderGuardianParticleGroupMixin${'$'}ElderGuardianRenderStateMixin"""")
+			if (stonecutter.compare(stonecutter.current.version, "1.21.9") >= 0) {
+				appendLine("""		,"ElderGuardianParticleMixin"""")
+				appendLine("""		,"ElderGuardianParticleGroupMixin"""")
+				append("""		,"ElderGuardianParticleGroupMixin${'$'}ElderGuardianRenderStateMixin"""")
+			} else {
+				if (stonecutter.compare(stonecutter.current.version, "1.21.5") <= 0) {
+					appendLine("""		,"GameRendererMixin"""")
+				}
+				append("""		,"MobAppearanceParticleMixin"""")
+			}
 		}
 
 		val mixinJava = "JAVA_${requiredJava.majorVersion}"
@@ -69,7 +83,7 @@ tasks {
 
 	register<Copy>("buildAndCollect") {
 		group = "build"
-		from(jar.map { it.archiveFile })
+		from(remapJar.map { it.archiveFile }, remapSourcesJar.map { it.archiveFile })
 		into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
 		dependsOn("build")
 	}

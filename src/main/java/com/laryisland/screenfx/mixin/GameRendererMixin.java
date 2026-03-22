@@ -27,14 +27,14 @@ public class GameRendererMixin {
 //? if <=1.21.1 {
 
 	/^@ModifyArgs(
-		method = "renderConfusionOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V",
+		method = "extractConfusionOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V",
+			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setColor(FFFF)V",
 			ordinal = 0
 		)
 	)
-	private void renderDistortionOverlay(Args args) {
+	private void distortionOverlay(Args args) {
 		float[] rgbArray = new float[3];
 		if (validColour.matcher(ScreenFXConfig.distortionColour).matches()) {
 			Color.decode(ScreenFXConfig.distortionColour).getRGBColorComponents(rgbArray);
@@ -50,7 +50,7 @@ public class GameRendererMixin {
 	}
 
 	@ModifyVariable(
-		method = "renderConfusionOverlay",
+		method = "extractConfusionOverlay",
 		at = @At("STORE"),
 		ordinal = 1
 	)
@@ -67,7 +67,7 @@ public class GameRendererMixin {
 		at = @At("STORE"),
 		index = 10
 	)
-	private float renderDistortionTesting_NauseaIntensity(float f) {
+	private float distortionTesting_NauseaIntensity(float f) {
 		if (ScreenFXConfig.distortionTesting != 0) {
 			if (ScreenFXConfig.distortionMode == effectModeEnum.DYNAMIC) {
 				return ScreenFXConfig.distortionTesting;
@@ -85,7 +85,7 @@ public class GameRendererMixin {
 			target = "Lnet/minecraft/client/player/LocalPlayer;hasEffect(Lnet/minecraft/core/Holder;)Z"
 		)
 	)
-	private boolean renderDistortionTesting_NauseaCheck(boolean original) {
+	private boolean distortionTesting_NauseaCheck(boolean original) {
 		return ScreenFXConfig.distortionTesting != 0f || original;
 	}
 ^///?}
@@ -94,7 +94,7 @@ public class GameRendererMixin {
 		method = "renderItemActivationAnimation",
 		at = @At("HEAD")
 	)
-	private void renderFloatingItem_disable(CallbackInfo ci) {
+	private void floatingItem_disable(CallbackInfo ci) {
 		if (ScreenFXConfig.totemOfUndyingDisable) {
 			this.itemActivationTicks = 0;
 		}

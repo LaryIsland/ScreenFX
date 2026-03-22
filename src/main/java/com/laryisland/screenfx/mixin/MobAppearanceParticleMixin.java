@@ -23,7 +23,7 @@ public abstract class MobAppearanceParticleMixin {
 
 	@ModifyArgs(
 //? if <=1.21.3 {
-		/^method = "render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
+		/^method = "extractRenderState(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
 ^///?} else
 		method = "renderCustom",
 		at = @At(
@@ -56,7 +56,7 @@ public abstract class MobAppearanceParticleMixin {
 
 	@ModifyConstant(
 //? if <=1.21.3 {
-		/^method = "render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
+		/^method = "extractRenderState(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
 ^///?} else
 		method = "renderCustom",
 		constant = @Constant(floatValue = 0.05f)
@@ -67,7 +67,7 @@ public abstract class MobAppearanceParticleMixin {
 
 	@ModifyConstant(
 //? if <=1.21.3 {
-		/^method = "render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
+		/^method = "extractRenderState(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V",
 ^///?} else
 		method = "renderCustom",
 		constant = @Constant(floatValue = 0.5f)

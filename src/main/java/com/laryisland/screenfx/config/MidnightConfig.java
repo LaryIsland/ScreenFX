@@ -33,7 +33,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
@@ -370,7 +370,9 @@ public abstract class MidnightConfig {
 		@Override
 		public void init() {
 			super.init();
-			tabNavigation.setWidth(this.width);
+//~ if >= 26.1-rc-2 'setWidth' -> 'updateWidth' {
+			tabNavigation.updateWidth(this.width);
+//~}
 			tabNavigation.arrangeElements();
 			if (tabs.size() > 1) this.addRenderableWidget(tabNavigation);
 
@@ -437,7 +439,11 @@ public abstract class MidnightConfig {
 						if (info.index < ((List<String>) info.value).size())
 							widget.setValue((String.valueOf(((List<String>) info.value).get(info.index))));
 						Predicate<String> processor = ((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(widget, done);
-						widget.setFilter(processor);
+						//? if <= 1.21.11 {
+						/*widget.setFilter(processor);
+						*///?} else {
+						widget.setResponder(s -> {if (!processor.test(s)) widget.setValue(info.tempValue);});
+						 //?}
 						resetButton.setWidth(20);
 						resetButton.setMessage(Component.literal("R").withStyle(ChatFormatting.GRAY));
 						Button cycleButton = Button.builder(
@@ -468,7 +474,11 @@ public abstract class MidnightConfig {
 						if (info.index < ((Map<String, ?>) info.value).size())
 							widget.setValue((String.valueOf(((Map<String, ?>) info.value).keySet().stream().toList().get(info.index))));
 						Predicate<String> processor = ((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(widget, done);
-						widget.setFilter(processor);
+						//? if <= 1.21.11 {
+						/*widget.setFilter(processor);
+						*///?} else {
+						widget.setResponder(s -> {if (!processor.test(s)) widget.setValue(info.tempValue);});
+						//?}
 						deleteButton.setWidth(20);
 						deleteButton.setMessage(Component.literal("D").withStyle(ChatFormatting.GRAY));
 						deleteButton.setTooltip(Tooltip.create(Component.literal("Delete Entry")));
@@ -501,7 +511,11 @@ public abstract class MidnightConfig {
 							textField.setMaxLength(info.width);
 							textField.setValue(info.tempValue);
 							Predicate<String> processor = ((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(textField, done);
-							textField.setFilter(processor);
+							//? if <= 1.21.11 {
+							/*textField.setFilter(processor);
+							*///?} else {
+							textField.setResponder(s -> {if (!processor.test(s)) textField.setValue(info.tempValue);});
+							//?}
 						}
 						widget.setTooltip(getTooltip(info));
 						if (e.isColor()) {
@@ -527,16 +541,16 @@ public abstract class MidnightConfig {
 		}
 
 		@Override
-		public void renderTransparentBackground(GuiGraphics context) {
+		public void extractTransparentBackground(GuiGraphicsExtractor context) {
 			context.fillGradient(0, 0, this.width, this.height, 2013265920, -2113929216);
 		}
 
 		@Override
-		public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-			super.render(context, mouseX, mouseY, delta);
-			this.list.render(context, mouseX, mouseY, delta);
+		public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+			super.extractRenderState(context, mouseX, mouseY, delta);
+			this.list.extractRenderState(context, mouseX, mouseY, delta);
 
-			if (tabs.size() < 2) context.drawCenteredString(font, title, width / 2, 10, -1);
+			if (tabs.size() < 2) context.centeredText(font, title, width / 2, 10, -1);
 		}
 	}
 
@@ -575,16 +589,16 @@ public abstract class MidnightConfig {
 			this.info = info;
 		}
 //? if <= 1.21.8 {
-		/*public void render(GuiGraphics context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		/*public void extractRenderState(GuiGraphicsExtractor context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 *///?} else {
-		public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int y = this.getY();
 //?}
-			buttons.forEach(b -> { b.setY(y); b.render(context, mouseX, mouseY, tickDelta); });
+			buttons.forEach(b -> { b.setY(y); b.extractRenderState(context, mouseX, mouseY, tickDelta); });
 			if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
 				int wrappedY = y;
 				for(Iterator<FormattedCharSequence> textIterator = textRenderer.split(text, (buttons.size() > 1 ? buttons.get(1).getX()-24 : Minecraft.getInstance().getWindow().getGuiScaledWidth() - 24)).iterator(); textIterator.hasNext(); wrappedY += 9) {
-					context.drawString(textRenderer, textIterator.next(), (info.centered) ? (
+					context.text(textRenderer, textIterator.next(), (info.centered) ? (
 						Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - (textRenderer.width(text) / 2)) : 12, wrappedY + 5, -1);
 				}
 			}

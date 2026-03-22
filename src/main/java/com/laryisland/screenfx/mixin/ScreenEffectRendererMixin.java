@@ -43,7 +43,7 @@ public abstract class ScreenEffectRendererMixin {
 		),
 		index = 3
 	)
-	private static float renderFireOverlay_opacity(float alpha) {
+	private static float fireOverlay_opacity(float alpha) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player != null) {
 			if ((ScreenFXConfig.fireCreativeHide && player.isCreative()) || (
@@ -62,7 +62,7 @@ public abstract class ScreenEffectRendererMixin {
 		),
 		index = 1
 	)
-	private static float renderFireOverlay_translate(float f) {
+	private static float fireOverlay_translate(float f) {
 		return f + ScreenFXConfig.firePosition - 0.5f; // default value is -0.3f
 	}
 
@@ -77,7 +77,7 @@ public abstract class ScreenEffectRendererMixin {
 		),
 		index = /*? if <=1.21.3 {*/ /*3 *//*?} else*/ 0
 	)
-	private static float renderUnderwaterOverlay(float alpha) {
+	private static float underwaterOverlay(float alpha) {
 		return ScreenFXConfig.underwaterOpacity;
 	}
 
@@ -91,7 +91,7 @@ public abstract class ScreenEffectRendererMixin {
 			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"
 		)
 	)
-	private static void renderInWallOverlay(Args args) {
+	private static void inWallOverlay(Args args) {
 		args.setAll(
 //? if >=1.21.4
 			ScreenFXConfig.inWallOpacity,
@@ -108,7 +108,7 @@ public abstract class ScreenEffectRendererMixin {
 		method = "renderTex",
 		at = @At("HEAD")
 	)
-	private static void renderInWallOverlay_opacityBegin(TextureAtlasSprite atlas, PoseStack pose, CallbackInfo ci) {
+	private static void inWallOverlay_opacityBegin(TextureAtlasSprite atlas, PoseStack pose, CallbackInfo ci) {
 		RenderSystem.enableBlend();
 	}
 
@@ -116,7 +116,7 @@ public abstract class ScreenEffectRendererMixin {
 		method = "renderTex",
 		at = @At("TAIL")
 	)
-	private static void renderInWallOverlay_opacityEnd(TextureAtlasSprite atlas, PoseStack pose, CallbackInfo ci) {
+	private static void inWallOverlay_opacityEnd(TextureAtlasSprite atlas, PoseStack pose, CallbackInfo ci) {
 		RenderSystem.disableBlend();
 	}
 *///?}
@@ -128,7 +128,7 @@ public abstract class ScreenEffectRendererMixin {
 			target = "Lnet/minecraft/client/player/LocalPlayer;isOnFire()Z"
 		)
 	)
-	private static boolean renderFireTest(boolean original) {
+	private static boolean fireTest(boolean original) {
 		return original || ScreenFXConfig.fireTesting;
 	}
 
@@ -139,7 +139,7 @@ public abstract class ScreenEffectRendererMixin {
 			target = "Lnet/minecraft/client/player/LocalPlayer;isEyeInFluid(Lnet/minecraft/tags/TagKey;)Z"
 		)
 	)
-	private static boolean renderUnderwaterTest(boolean original) {
+	private static boolean underwaterTest(boolean original) {
 		return original || ScreenFXConfig.underwaterTesting;
 	}
 
@@ -148,7 +148,7 @@ public abstract class ScreenEffectRendererMixin {
 		at = @At("RETURN"),
 		cancellable = true
 	)
-	private static void renderInWallTest(Player player, CallbackInfoReturnable<BlockState> cir) {
+	private static void inWallTest(Player player, CallbackInfoReturnable<BlockState> cir) {
 		if (cir.getReturnValue() == null && ScreenFXConfig.inWallTesting) {
 			cir.setReturnValue(Blocks.COBBLESTONE.defaultBlockState());
 		}
@@ -159,7 +159,7 @@ public abstract class ScreenEffectRendererMixin {
 		method = "renderItemActivationAnimation",
 		at = @At("HEAD")
 	)
-	private void renderFloatingItem_disable(CallbackInfo ci) {
+	private void floatingItem_disable(CallbackInfo ci) {
 		if (ScreenFXConfig.totemOfUndyingDisable) {
 			this.itemActivationTicks = 0;
 		}

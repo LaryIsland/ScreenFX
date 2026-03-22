@@ -35,7 +35,7 @@ public class ItemInHandRendererMixin {
 		)
 	)
 
-	private void renderHeldItem_matrixManipulation(
+	private void heldItem_matrixManipulation(
 		AbstractClientPlayer player,
 		float tickDelta,
 		float pitch,

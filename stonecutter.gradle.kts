@@ -1,9 +1,8 @@
 plugins {
 	id("dev.kikugie.stonecutter")
-	id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT" apply false
 }
 
-stonecutter active "1.21.11"
+stonecutter active "26.1-rc-2"
 
 // See https://stonecutter.kikugie.dev/wiki/config/params
 stonecutter parameters {
@@ -15,6 +14,21 @@ stonecutter parameters {
 	replacements {
 		string(current.parsed >= "1.21.11") {
 			replace("ResourceLocation", "Identifier")
+		}
+		string(current.parsed >= "26.1-rc-2") {
+			replace("GuiGraphics", "GuiGraphicsExtractor")
+			replace("renderCameraOverlays", "extractCameraOverlays")
+			replace("renderTextureOverlay", "extractTextureOverlay")
+			replace("renderVignette", "extractVignette")
+			replace("renderConfusionOverlay", "extractConfusionOverlay")
+			replace("renderPortalOverlay", "extractPortalOverlay")
+			replace("renderSpyglassOverlay", "extractSpyglassOverlay")
+			replace("render(", "extractRenderState(")
+			replace("renderListSeparators", "extractListSeparators")
+			replace("renderContent", "extractContent")
+			replace(".drawString(", ".text(")
+			replace("drawCenteredString", "centeredText")
+			replace("renderTransparentBackground", "extractTransparentBackground")
 		}
 	}
 }
