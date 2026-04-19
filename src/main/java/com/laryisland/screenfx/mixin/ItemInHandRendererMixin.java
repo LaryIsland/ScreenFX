@@ -52,9 +52,8 @@ public class ItemInHandRendererMixin {
 		CallbackInfo ci
 	) {
 		float transX, transY, transZ, scale, rotX, rotY, rotZ;
-		if (ScreenFXConfig.uniqueHeldItemMap.containsKey(itemStack.getItem().toString().substring(10))) {
-			List<Float> specificItemConfig = ScreenFXConfig.uniqueHeldItemMap.get(
-				itemStack.getItem().toString().substring(10));
+		if (ScreenFXConfig.uniqueHeldItemMap.containsKey(itemStack.getItem().toString()/*? if >= 1.21 { */.substring(10) /*?}*/)) {
+			List<Float> specificItemConfig = ScreenFXConfig.uniqueHeldItemMap.get(itemStack.getItem().toString()/*? if >= 1.21 { */.substring(10) /*?}*/);
 			transX = specificItemConfig.get(0);
 			transY = specificItemConfig.get(1);
 			transZ = specificItemConfig.get(2);

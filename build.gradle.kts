@@ -1,12 +1,12 @@
 plugins {
-	id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
+	id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
 }
 
 version = "${property("mod.version")}+${sc.current.version}"
 base.archivesName = property("mod.id") as String
 
 val requiredJava = when {
-	sc.current.parsed >= "26.1-rc-2" -> JavaVersion.VERSION_25
+	sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
 	else -> JavaVersion.VERSION_21
 }
 

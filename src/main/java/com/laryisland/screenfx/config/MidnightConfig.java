@@ -47,8 +47,15 @@ import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
 import net.minecraft.client.gui.components.EditBox;
+//? if >= 1.21.8 {
+import net.minecraft.client.renderer.RenderPipelines;
+//?} else
+//import net.minecraft.client.renderer.RenderType;
+//? if >= 1.21 <= 1.21.4
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
@@ -370,7 +377,7 @@ public abstract class MidnightConfig {
 		@Override
 		public void init() {
 			super.init();
-//~ if >= 26.1-rc-2 'setWidth' -> 'updateWidth' {
+//~ if >= 26.1 'setWidth' -> 'updateWidth' {
 			tabNavigation.updateWidth(this.width);
 //~}
 			tabNavigation.arrangeElements();
@@ -391,7 +398,14 @@ public abstract class MidnightConfig {
 				Objects.requireNonNull(minecraft).setScreen(parent);
 			}).bounds(this.width / 2 + 4, this.height - 26, 150, 20).build());
 
-			this.list = new MidnightConfigListWidget(this.minecraft, this.width, this.height - 64, 24, 25);
+//? if >= 1.21 {
+			this.list = new MidnightConfigListWidget(this.minecraft, this.width, this.height - 57, 24, 24);
+//?} else {
+			/*this.list = new MidnightConfigListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
+			if (this.minecraft != null && this.minecraft.level != null) {
+				this.list.setRenderBackground(false);
+			}
+*///?}
 			this.addWidget(this.list);
 
 			fillList();
@@ -541,23 +555,73 @@ public abstract class MidnightConfig {
 		}
 
 		@Override
-		public void extractTransparentBackground(GuiGraphicsExtractor context) {
-			context.fillGradient(0, 0, this.width, this.height, 2013265920, -2113929216);
+//? if < 1.21 {
+		/*public void renderBackground(GuiGraphicsExtractor context) {
+			assert this.minecraft != null;
+			if (this.minecraft.level != null) {
+				context.fillGradient(0, 24, this.width, this.height, 806359056, 1074794512);
+			} else {
+				this.renderDirtBackground(context);
+			}
 		}
 
+*///?} else {
+		public void extractTransparentBackground(GuiGraphicsExtractor context) {
+			context.fillGradient(0, 24, this.width, this.height, 806359056, 1074794512);
+		}
+//?}
 		@Override
 		public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+//? if < 1.21 {
+			/*this.renderBackground(context);
+			this.list.extractRenderState(context, mouseX, mouseY, delta);
+			super.extractRenderState(context, mouseX, mouseY, delta);
+*///?} else {
 			super.extractRenderState(context, mouseX, mouseY, delta);
 			this.list.extractRenderState(context, mouseX, mouseY, delta);
+//?}
 
 			if (tabs.size() < 2) context.centeredText(font, title, width / 2, 10, -1);
 		}
+
+//? if >= 1.21
+		@Override
+//? if >= 1.21.9 {
+		public boolean isInGameUi() {
+			return this.minecraft.level != null;
+		}
+//?} elif = 1.21.8 {
+		/*protected void renderBlurredBackground(GuiGraphicsExtractor guiGraphics) {
+			float f = this.minecraft.level == null ? this.minecraft.options.getMenuBackgroundBlurriness() : 0.f;
+			if (f >= 1.0f) {
+				guiGraphics.blurBeforeThisStratum();
+			}
+		}
+*///?} elif >= 1.21.3 <= 1.21.7 {
+		/*protected void renderBlurredBackground() {
+			if (this.minecraft.level == null) {
+				this.minecraft.gameRenderer.processBlurEffect();
+			}
+		}
+*///?} elif >= 1.21 {
+		/*protected void renderBlurredBackground(float f) {
+			if (this.minecraft.level == null) {
+				this.minecraft.gameRenderer.processBlurEffect(f);
+				this.minecraft.getMainRenderTarget().bindWrite(false);
+			}
+		}
+*///?}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class MidnightConfigListWidget extends ContainerObjectSelectionList<ButtonEntry> {
+//? if >= 1.21 {
 		public MidnightConfigListWidget(Minecraft client, int width, int height, int y, int itemHeight) {
 			super(client, width, height, y, itemHeight);
+//?} else {
+		/*public MidnightConfigListWidget(Minecraft client, int i, int j, int k, int l, int m) {
+			super(client, i, j, k, l, m);
+*///?}
 		}
 		@Override
 //? if >= 1.21.4 {
@@ -574,6 +638,50 @@ public abstract class MidnightConfig {
 		public void clear() { this.clearEntries(); }
 		@Override
 		public int getRowWidth() { return 10000; }
+//? if >= 1.21 {
+		@Override
+		protected void extractListBackground(final GuiGraphicsExtractor graphics) {
+	//? if <= 1.21.4
+			//RenderSystem.enableBlend();
+			graphics.blit(
+	//? if >= 1.21.3
+				RenderPipelines.GUI_TEXTURED,
+				Identifier.withDefaultNamespace("textures/gui/menu_background.png"),
+				this.getX(),
+				this.getY(),
+				(float)this.getRight(),
+				(float)(this.getBottom() + (int)this./*? < 1.21.4 {*/ /*getScrollAmount *//*?} else {*/ scrollAmount /*?}*/()),
+				this.getWidth(),
+				this.getHeight(),
+				32,
+				32
+			);
+	//? if <= 1.21.4
+			//RenderSystem.disableBlend();
+		}
+
+		@Override
+		protected void extractListSeparators(final GuiGraphicsExtractor graphics) {
+	//? if <= 1.21.4
+			//RenderSystem.enableBlend();
+			Identifier footerSeparator = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
+			graphics.blit(
+	//? if >= 1.21.3
+				RenderPipelines.GUI_TEXTURED,
+				footerSeparator,
+				this.getX(),
+				this.getBottom(),
+				0.0F,
+				0.0F,
+				this.getWidth(),
+				2,
+				32,
+				2
+			);
+	//? if <= 1.21.4
+			//RenderSystem.disableBlend();
+		}
+//?}
 	}
 	public static class ButtonEntry extends ContainerObjectSelectionList.Entry<ButtonEntry> {
 		private static final Font textRenderer = Minecraft.getInstance().font;

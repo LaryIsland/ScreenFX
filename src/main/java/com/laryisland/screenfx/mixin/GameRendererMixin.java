@@ -65,7 +65,11 @@ public class GameRendererMixin {
 	@ModifyVariable(
 		method = "render",
 		at = @At("STORE"),
+//? if >=1.21 {
 		index = 10
+//?} else {
+		/^¹ordinal = 1
+¹^///?}
 	)
 	private float distortionTesting_NauseaIntensity(float f) {
 		if (ScreenFXConfig.distortionTesting != 0) {
@@ -82,7 +86,11 @@ public class GameRendererMixin {
 		method = "render",
 		at = @At(
 			value = "INVOKE",
+//? if >= 1.21 {
 			target = "Lnet/minecraft/client/player/LocalPlayer;hasEffect(Lnet/minecraft/core/Holder;)Z"
+//?} else {
+			/^¹target = "Lnet/minecraft/client/player/LocalPlayer;hasEffect(Lnet/minecraft/world/effect/MobEffect;)Z"
+¹^///?}
 		)
 	)
 	private boolean distortionTesting_NauseaCheck(boolean original) {

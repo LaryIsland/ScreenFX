@@ -39,7 +39,10 @@ public abstract class ScreenEffectRendererMixin {
 		method = "renderFire",
 		at = @At(
 			value = "INVOKE",
+//? if >= 1.21 {
 			target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
+//?} else
+			//target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;color(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
 		),
 		index = 3
 	)
@@ -85,7 +88,9 @@ public abstract class ScreenEffectRendererMixin {
 		method = "renderTex",
 		at = @At(
 			value = "INVOKE",
-//? if <=1.21.3 {
+//? if <1.21.1 {
+			/*target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;color(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
+*///?} elif <=1.21.3 {
 			/*target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
 *///?} else
 			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"

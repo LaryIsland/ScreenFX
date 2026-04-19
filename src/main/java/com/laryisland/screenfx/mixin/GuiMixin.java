@@ -187,6 +187,7 @@ public class GuiMixin {
 	}
 
 	@ModifyArg(
+//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
@@ -199,6 +200,7 @@ public class GuiMixin {
 	}
 
 	@ModifyArg(
+//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
@@ -214,9 +216,10 @@ public class GuiMixin {
 	}
 
 	@ModifyVariable(
+//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At("STORE"),
-		index = /*? if <= 1.21.4 {*/ /*4 *//*?} else */ 6
+		index = /*? if >= 1.21 <= 1.21.4 {*/ /*4 *//*?} else */ 6
 	)
 	private float portalEffectTesting(float f) {
 //? if >=1.21.2 <= 1.21.4 {
@@ -232,6 +235,7 @@ public class GuiMixin {
 
 //? if <=1.21.1 {
 	/*@ModifyExpressionValue(
+//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
@@ -270,6 +274,7 @@ public class GuiMixin {
 //?}
 
 	@ModifyExpressionValue(
+//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
@@ -281,6 +286,7 @@ public class GuiMixin {
 	}
 
 	@ModifyExpressionValue(
+//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
