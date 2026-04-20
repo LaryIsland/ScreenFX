@@ -17,6 +17,9 @@ stonecutter parameters {
 	}
 
 	replacements {
+		string(current.parsed >= "1.20.5", "java17replacements") {
+			replace(".get(0)", ".getFirst()")
+		}
 		string(current.parsed >= "1.21.8") {
 			replace("RenderType::guiTextured", "RenderPipelines.GUI_TEXTURED")
 		}
@@ -38,6 +41,7 @@ stonecutter parameters {
 			replace("drawCenteredString", "centeredText")
 			replace("renderTransparentBackground", "extractTransparentBackground")
 			replace("renderListBackground", "extractListBackground")
+			replace("renderBlurredBackground", "extractBlurredBackground")
 		}
 	}
 }

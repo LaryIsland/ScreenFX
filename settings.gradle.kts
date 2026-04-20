@@ -9,7 +9,7 @@ pluginManagement {
 }
 
 plugins {
-	id("dev.kikugie.stonecutter") version "0.9"
+	id("dev.kikugie.stonecutter") version "0.9.2"
 }
 
 stonecutter {
@@ -17,10 +17,11 @@ stonecutter {
 		fun versionsObfuscation(vararg versions: String) {
 			for (version in versions)
 				version(version).buildscript(
-					if (stonecutter.eval(version, ">=26.1"))
+					if (stonecutter.eval(version, ">=26.1")) {
 						"build.gradle.kts"
-					else
+					} else {
 						"build-obfuscated.gradle.kts"
+					}
 				)
 		}
 		versionsObfuscation("1.20.1", "1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.8", "1.21.11", "26.1.2")

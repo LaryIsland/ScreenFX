@@ -1,3 +1,5 @@
+//~ java17replacements
+
 package com.laryisland.screenfx.config;
 
 import com.google.common.collect.Lists;
@@ -52,7 +54,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 //?} else
 //import net.minecraft.client.renderer.RenderType;
 //? if >= 1.21 <= 1.21.4
-import com.mojang.blaze3d.systems.RenderSystem;
+//import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.Identifier;
@@ -586,25 +588,21 @@ public abstract class MidnightConfig {
 
 //? if >= 1.21
 		@Override
-//? if >= 1.21.9 {
-		public boolean isInGameUi() {
-			return this.minecraft.level != null;
-		}
-//?} elif = 1.21.8 {
-		/*protected void renderBlurredBackground(GuiGraphicsExtractor guiGraphics) {
+//? if >= 1.21.8 {
+		protected void extractBlurredBackground(GuiGraphicsExtractor guiGraphics) {
 			float f = this.minecraft.level == null ? this.minecraft.options.getMenuBackgroundBlurriness() : 0.f;
 			if (f >= 1.0f) {
 				guiGraphics.blurBeforeThisStratum();
 			}
 		}
-*///?} elif >= 1.21.3 <= 1.21.7 {
-		/*protected void renderBlurredBackground() {
+//?} elif >= 1.21.3 <= 1.21.7 {
+		/*protected void extractBlurredBackground() {
 			if (this.minecraft.level == null) {
 				this.minecraft.gameRenderer.processBlurEffect();
 			}
 		}
 *///?} elif >= 1.21 {
-		/*protected void renderBlurredBackground(float f) {
+		/*protected void extractBlurredBackground(float f) {
 			if (this.minecraft.level == null) {
 				this.minecraft.gameRenderer.processBlurEffect(f);
 				this.minecraft.getMainRenderTarget().bindWrite(false);
