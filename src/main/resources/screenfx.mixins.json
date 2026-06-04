@@ -4,7 +4,6 @@
 	"compatibilityLevel": "${java}",
 	"client": [
 		"ItemInHandRendererMixin"
-		,"GuiMixin"
 		,"ScreenEffectRendererMixin"
 ${mixinList}
 	],

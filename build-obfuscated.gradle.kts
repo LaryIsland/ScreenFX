@@ -69,6 +69,7 @@ tasks {
 		filesMatching("fabric.mod.json") { expand(props) }
 
 		val mixinList = buildString {
+			appendLine("""		"GuiMixin"""")
 			if (stonecutter.compare(stonecutter.current.version, "1.21.9") >= 0) {
 				appendLine("""		,"ElderGuardianParticleMixin"""")
 				appendLine("""		,"ElderGuardianParticleGroupMixin"""")

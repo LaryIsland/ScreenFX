@@ -21,6 +21,7 @@ repositories {
 dependencies {
 	minecraft("com.mojang:minecraft:${sc.current.version}")
 	implementation("net.fabricmc:fabric-loader:${property("fabric_loader")}")
+	implementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api")}")
 	implementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
 }
 
@@ -64,7 +65,8 @@ tasks {
 		val mixinList = buildString {
 			appendLine("""		,"ElderGuardianParticleMixin"""")
 			appendLine("""		,"ElderGuardianParticleGroupMixin"""")
-			append("""		,"ElderGuardianParticleGroupMixin${'$'}ElderGuardianRenderStateMixin"""")
+			appendLine("""		,"ElderGuardianParticleGroupMixin${'$'}ElderGuardianRenderStateMixin"""")
+			append("""		,"HudMixin"""")
 		}
 
 		val mixinJava = "JAVA_${requiredJava.majorVersion}"

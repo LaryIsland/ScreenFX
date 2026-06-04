@@ -2,7 +2,7 @@ plugins {
 	id("dev.kikugie.stonecutter")
 }
 
-stonecutter active "26.1.2"
+stonecutter active "26.2-pre-3"
 
 // See https://stonecutter.kikugie.dev/wiki/config/params
 stonecutter parameters {
@@ -14,6 +14,10 @@ stonecutter parameters {
 	swaps["render_camera_overlays"] = when {
 		current.parsed < "1.21" -> "method = \"render\","
 		else -> "method = \"renderCameraOverlays\","
+	}
+	swaps["render_screen_effect"] = when {
+		current.parsed <= "26.1.2" -> "method = \"renderScreenEffect\","
+		else -> "method = \"submit\","
 	}
 
 	replacements {
@@ -42,6 +46,12 @@ stonecutter parameters {
 			replace("renderTransparentBackground", "extractTransparentBackground")
 			replace("renderListBackground", "extractListBackground")
 			replace("renderBlurredBackground", "extractBlurredBackground")
+		}
+		string(current.parsed > "26.1.2") {
+			replace("renderArmWithItem", "submitArmWithItem")
+			replace("renderWater", "submitWater")
+			replace("I18n.exists(", "Language.getInstance().has(")
+			replace("Objects.requireNonNull(minecraft).setScreen(", "minecraft.gui.setScreen(")
 		}
 	}
 }

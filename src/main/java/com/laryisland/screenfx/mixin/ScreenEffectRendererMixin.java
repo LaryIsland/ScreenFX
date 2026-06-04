@@ -14,9 +14,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+//? if <= 26.1.2 {
+/*import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+*///?}
 //? if != 1.21.4 != 1.21.5
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? if >= 1.21.6
@@ -35,7 +38,8 @@ public abstract class ScreenEffectRendererMixin {
 	private int itemActivationTicks;
 //?}
 
-	@ModifyArg(
+//? if <= 26.1.2 {
+	/*@ModifyArg(
 		method = "renderFire",
 		at = @At(
 			value = "INVOKE",
@@ -56,12 +60,38 @@ public abstract class ScreenEffectRendererMixin {
 		}
 		return ScreenFXConfig.fireOpacity;
 	}
-
+*///?} else {
 	@ModifyArg(
-		method = "renderFire",
+		method = "buildFireQuad",
 		at = @At(
 			value = "INVOKE",
-			target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"
+			target = "Lnet/minecraft/client/renderer/ScreenEffectRenderer;buildSpriteQuad(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;FFFFFI)V"
+		),
+		index = 8
+	)
+	private static int fireOverlay_opacity(int colour) {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player != null) {
+			if ((ScreenFXConfig.fireCreativeHide && player.isCreative()) || (
+				ScreenFXConfig.fireResistanceHide && player.hasEffect(FIRE_RESISTANCE))) {
+				return net.minecraft.util.ARGB.color(0, colour);
+			}
+		}
+		return net.minecraft.util.ARGB.color(ScreenFXConfig.fireOpacity, colour);
+	}
+//?}
+
+	@ModifyArg(
+//? if <= 26.1.2 {
+		/*method = "renderFire",
+*///?} else
+		method = "lambda$submitFire$0",
+		at = @At(
+			value = "INVOKE",
+//? if <= 26.1.2 {
+			/*target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"
+*///?} else
+			target = "Lorg/joml/Matrix4f;translate(FFF)Lorg/joml/Matrix4f;"
 		),
 		index = 1
 	)
@@ -70,7 +100,7 @@ public abstract class ScreenEffectRendererMixin {
 	}
 
 	@ModifyArg(
-		method = "renderWater",
+		method = "submitWater",
 		at = @At(
 			value = "INVOKE",
 //? if <=1.21.3 {
@@ -84,15 +114,16 @@ public abstract class ScreenEffectRendererMixin {
 		return ScreenFXConfig.underwaterOpacity;
 	}
 
-	@ModifyArgs(
+//? if <= 26.1.2 {
+	/*@ModifyArgs(
 		method = "renderTex",
 		at = @At(
 			value = "INVOKE",
 //? if <1.21.1 {
-			/*target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;color(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
-*///?} elif <=1.21.3 {
-			/*target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
-*///?} else
+			/^target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;color(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
+^///?} elif <=1.21.3 {
+			/^target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
+^///?} else
 			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"
 		)
 	)
@@ -107,6 +138,30 @@ public abstract class ScreenEffectRendererMixin {
 			//,ScreenFXConfig.inWallOpacity
 		);
 	}
+*///?} else {
+	@ModifyArg(
+		method = "lambda$submitBlockSprite$0",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/renderer/ScreenEffectRenderer;buildSpriteQuad(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;FFFFFI)V"
+		)
+	)
+	private static int inWallOverlay(int colour) {
+		System.out.println(colour);
+		System.out.println(net.minecraft.util.ARGB.colorFromFloat(
+			ScreenFXConfig.inWallOpacity,
+			ScreenFXConfig.inWallBrightness,
+			ScreenFXConfig.inWallBrightness,
+			ScreenFXConfig.inWallBrightness
+		));
+		return net.minecraft.util.ARGB.colorFromFloat(
+			ScreenFXConfig.inWallOpacity,
+			ScreenFXConfig.inWallBrightness,
+			ScreenFXConfig.inWallBrightness,
+			ScreenFXConfig.inWallBrightness
+		);
+	}
+//?}
 
 //? if <=1.21.3 {
 	/*@Inject(
@@ -127,7 +182,8 @@ public abstract class ScreenEffectRendererMixin {
 *///?}
 
 	@ModifyExpressionValue(
-		method = "renderScreenEffect",
+//$render_screen_effect
+		method = "submit",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/player/LocalPlayer;isOnFire()Z"
@@ -138,7 +194,8 @@ public abstract class ScreenEffectRendererMixin {
 	}
 
 	@ModifyExpressionValue(
-		method = "renderScreenEffect",
+//$render_screen_effect
+		method = "submit",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/player/LocalPlayer;isEyeInFluid(Lnet/minecraft/tags/TagKey;)Z"

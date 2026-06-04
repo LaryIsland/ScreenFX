@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 public class ItemInHandRendererMixin {
 
 	@Inject(
-		method = "renderArmWithItem",
+		method = "submitArmWithItem",
 		at = @At(
 			value = "INVOKE",
 //? if <= 1.21.4 {
@@ -48,7 +48,7 @@ public class ItemInHandRendererMixin {
 		/*MultiBufferSource vertexConsumers,
 *///?} else
 		SubmitNodeCollector submitNodeCollector,
-		int light,
+		int lightCoords,
 		CallbackInfo ci
 	) {
 		float transX, transY, transZ, scale, rotX, rotY, rotZ;

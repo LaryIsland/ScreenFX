@@ -69,3 +69,11 @@ modmenu_version = "18.0.0-alpha.6"
 mod.mc_dep = ">=26.1"
 mod.mc_title = "26.1.2"
 mod.mc_targets = "26.1 26.1.1 26.1.2"
+
+["26.2-pre-3"]
+fabric_api = "0.150.2+26.2"
+modmenu_version = "20.0.0-alpha.1"
+
+mod.mc_dep = ">26.1.2"
+mod.mc_title = "26.2-pre-3"
+mod.mc_targets = "26.2-pre-3"

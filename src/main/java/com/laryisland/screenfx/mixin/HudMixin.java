@@ -1,5 +1,5 @@
-//? if <= 26.1.2 {
-/*package com.laryisland.screenfx.mixin;
+//? if > 26.1.2 {
+package com.laryisland.screenfx.mixin;
 
 import static com.laryisland.screenfx.ScreenFX.validColour;
 
@@ -7,51 +7,33 @@ import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import java.awt.Color;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Hud;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-//? if >= 1.21.6 {
 import net.minecraft.util.ARGB;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.spongepowered.asm.mixin.injection.Redirect;
-//?}
-//? if <= 1.21.5 {
-/^import com.mojang.blaze3d.systems.RenderSystem;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-^///?}
-//? if <= 1.21.1 {
-/^import org.spongepowered.asm.mixin.injection.At.Shift;
-^///?} else {
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import java.util.Optional;
-//?}
 
-@Mixin(Gui.class)
-public class GuiMixin {
+@Mixin(Hud.class)
+public class HudMixin {
 
 	@ModifyArg(
 		method = "extractPortalOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V",
 		at = @At(
 			value = "INVOKE",
-//? if <=1.21.1 {
-			/^target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setColor(FFFF)V",
-			ordinal = 0
-		),
-		index = 3
-^///?} else {
 			target = "Lnet/minecraft/util/ARGB;white(F)I"
 		)
-//?}
 	)
 	private float portalOverlay(float nauseaStrength) {
 		if (ScreenFXConfig.portalRemoveFadeIn) {
@@ -64,12 +46,9 @@ public class GuiMixin {
 		method = "extractSpyglassOverlay",
 		at = @At(
 			value = "INVOKE",
-//? if <= 1.21.5 {
-			/^target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(Lnet/minecraft/client/renderer/RenderType;IIIIII)V"
-^///?} else
 			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(Lcom/mojang/blaze3d/pipeline/RenderPipeline;IIIII)V"
 		),
-		index = /^? if <= 1.21.5 {^/ /^6 ^//^?} else ^/ 5
+		index = 5
 	)
 	private int spyglassOverlay_opacity(int color) {
 		if (ScreenFXConfig.spyglassOverlayColour.length() == 7
@@ -81,38 +60,6 @@ public class GuiMixin {
 			.intValue();
 	}
 
-//? if <= 1.21.5 {
-	/^@Inject(
-		method = "extractSpyglassOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V",
-		at = @At(
-			value = "INVOKE",
-//? if <=1.21.2 {
-			/^¹target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lnet/minecraft/resources/Identifier;IIIFFIIII)V"
-¹^///?} else
-			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Ljava/util/function/Function;Lnet/minecraft/resources/Identifier;IIFFIIII)V"
-		)
-	)
-	private void spyglassOverlay_textureOpacity(CallbackInfo ci) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, ScreenFXConfig.spyglassTextureOpacity);
-	}
-
-	@Inject(
-		method = "extractSpyglassOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V",
-//? if <=1.21.2 {
-		/^¹at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lnet/minecraft/resources/Identifier;IIIFFIIII)V",
-			shift = Shift.AFTER
-		)
-¹^///?} else
-		at = @At("TAIL")
-	)
-	private void spyglassOverlay_textureOpacityReset(CallbackInfo ci) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-	}
-^///?}
-
-//? if >= 1.21.6 {
 	@Redirect(
 		method = "extractSpyglassOverlay",
 		at = @At(
@@ -120,18 +67,16 @@ public class GuiMixin {
 			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIFFIIII)V"
 		)
 	)
-	private void spyglassOverlay_textureOpacity(GuiGraphicsExtractor gui, RenderPipeline pipeline, Identifier spyglassScope, int i, int j, float f, float g, int l, int m, int n, int o) {
-		gui.blit(pipeline, spyglassScope, i, j, f, g, l, m, n, o, ARGB.colorFromFloat(ScreenFXConfig.spyglassTextureOpacity, 1.f, 1.f, 1.f));
+	private void spyglassOverlay_textureOpacity(GuiGraphicsExtractor gui, RenderPipeline renderPipeline, Identifier texture, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+		gui.blit(renderPipeline, texture,
+			x, y, u, v, width, height,
+			textureWidth, textureHeight, ARGB.colorFromFloat(ScreenFXConfig.spyglassTextureOpacity, 1.f, 1.f, 1.f));
 	}
-//?}
 
 	@ModifyArgs(
 		method = "extractVignette(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/Entity;)V",
 		at = @At(
 			value = "INVOKE",
-//? if <=1.21.1 {
-			/^target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setColor(FFFF)V",
-^///?} else
 			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I",
 			ordinal = 1
 		)
@@ -148,7 +93,7 @@ public class GuiMixin {
 		}
 		for (int i = 0; i < 3; ++i) {
 			args.set(
-				i /^? if >= 1.21.6 {^/ +1 /^?}^/,
+				i + 1,
 				(1f - rgbArray[i]) * opacity
 			);
 		}
@@ -158,9 +103,6 @@ public class GuiMixin {
 		method = "extractVignette(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/Entity;)V",
 		at = @At(
 			value = "INVOKE",
-//? if <=1.21.1 {
-			/^target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setColor(FFFF)V",
-^///?} else
 			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I",
 			ordinal = 0
 		)
@@ -178,7 +120,7 @@ public class GuiMixin {
 			}
 			for (int i = 0; i < 3; ++i) {
 				args.set(
-					i /^? if >= 1.21.6 {^/ +1 /^?}^/,
+					i + 1,
 					(1f - rgbArray[i]) * opacity
 				);
 			}
@@ -188,11 +130,10 @@ public class GuiMixin {
 	}
 
 	@ModifyArg(
-//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/Gui;extractTextureOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/resources/Identifier;F)V",
+			target = "Lnet/minecraft/client/gui/Hud;extractTextureOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/resources/Identifier;F)V",
 			ordinal = 0
 		)
 	)
@@ -201,11 +142,10 @@ public class GuiMixin {
 	}
 
 	@ModifyArg(
-//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/Gui;extractTextureOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/resources/Identifier;F)V",
+			target = "Lnet/minecraft/client/gui/Hud;extractTextureOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/resources/Identifier;F)V",
 			ordinal = 1
 		)
 	)
@@ -217,39 +157,21 @@ public class GuiMixin {
 	}
 
 	@ModifyVariable(
-//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At("STORE"),
-		index = /^? if >= 1.21 <= 1.21.4 {^/ /^4 ^//^?} else ^/ 6
+		name = "portalIntensity"
 	)
-	private float portalEffectTesting(float f) {
-//? if >=1.21.2 <= 1.21.4 {
-		/^if (ScreenFXConfig.distortionTesting != 0f) {
-			return ScreenFXConfig.distortionTesting;
-		}
-^///?}
+	private float portalEffectTesting(float portalIntensity) {
 		if (ScreenFXConfig.portalTesting != 0f) {
 			return ScreenFXConfig.portalTesting;
 		}
-		return f;
+		return portalIntensity;
 	}
 
-//? if <=1.21.1 {
-	/^@ModifyExpressionValue(
-//$ render_camera_overlays
-		method = "extractCameraOverlays",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"
-		)
-	)
-	private boolean pumpkinBlurTesting(boolean original) {
-		return original || ScreenFXConfig.pumpkinTesting;
-	}
-^///?} else {
 	@ModifyVariable(
 		method = "extractCameraOverlays",
-		at = @At("STORE")
+		at = @At("STORE"),
+		name = "equippable"
 	)
 	private Equippable pumpkinBlurTesting(Equippable equippable) {
 		if (ScreenFXConfig.pumpkinTesting) {
@@ -261,21 +183,16 @@ public class GuiMixin {
 				Optional.empty(),
 				false,
 				false,
-				false
-				//? if >= 1.21.5
-				,false
-				//? if >= 1.21.6 {
-				, false
-				, BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.SHEARS_SNIP)
-				//?}
+				false,
+				false,
+				false,
+				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.SHEARS_SNIP)
 			);
 		}
 		return equippable;
 	}
-//?}
 
 	@ModifyExpressionValue(
-//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
@@ -287,7 +204,6 @@ public class GuiMixin {
 	}
 
 	@ModifyExpressionValue(
-//$ render_camera_overlays
 		method = "extractCameraOverlays",
 		at = @At(
 			value = "INVOKE",
@@ -298,7 +214,6 @@ public class GuiMixin {
 		return original || ScreenFXConfig.spyglassTesting;
 	}
 
-//? if >=1.21.2 {
 	@ModifyArgs(
 		method = "extractConfusionOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V",
 		at = @At(
@@ -324,45 +239,22 @@ public class GuiMixin {
 	@ModifyVariable(
 		method = "extractConfusionOverlay",
 		at = @At("STORE"),
-		ordinal = 1
+		name = "size"
 	)
-	private float fixDistortionRadius(float f) {
+	private float fixDistortionRadius(float size) {
 		if (ScreenFXConfig.distortionMode == effectModeEnum.FIXED) {
 			return 2f - ScreenFXConfig.distortionRadius;
 		} else {
-			return 2f - (2f - f) * ScreenFXConfig.distortionRadius;
+			return 2f - (2f - size) * ScreenFXConfig.distortionRadius;
 		}
 	}
 
-//? if <= 1.21.4 {
-	/^@ModifyExpressionValue(
-		method = "extractCameraOverlays",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/player/LocalPlayer;hasEffect(Lnet/minecraft/core/Holder;)Z"
-		)
-	)
-	private boolean distortionTesting_NauseaCheck(boolean original) {
-		return ScreenFXConfig.distortionTesting != 0f || original;
-	}
-
-	@ModifyArg(
-		method = "extractCameraOverlays",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/Gui;extractConfusionOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V"
-		)
-	)
-^///?}
-//?}
-//? if >= 1.21.5 {
 	@ModifyVariable(
 		method = "extractCameraOverlays",
 		at = @At("STORE"),
-		index = 7
+		name = "nauseaIntensity"
 	)
-/^?}^//^? if >= 1.21.2 {^/
-	private float distortionTesting_NauseaIntensity(float f) {
+	private float distortionTesting_NauseaIntensity(float nauseaIntensity) {
 		if (ScreenFXConfig.distortionTesting != 0) {
 			if (ScreenFXConfig.distortionMode == effectModeEnum.DYNAMIC) {
 				return ScreenFXConfig.distortionTesting;
@@ -370,8 +262,7 @@ public class GuiMixin {
 				return 1f;
 			}
 		}
-		return f;
+		return nauseaIntensity;
 	}
-//?}
 }
-*///?}
+//?}

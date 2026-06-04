@@ -39,15 +39,12 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.tabs.GridLayoutTab;
-import net.minecraft.client.gui.components.tabs.Tab;
-import net.minecraft.client.gui.components.tabs.TabManager;
+import net.minecraft.client.gui.components.tabs.*;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.tabs.TabNavigationBar;
 import net.minecraft.client.gui.components.EditBox;
 //? if >= 1.21.8 {
 import net.minecraft.client.renderer.RenderPipelines;
@@ -55,7 +52,10 @@ import net.minecraft.client.renderer.RenderPipelines;
 //import net.minecraft.client.renderer.RenderType;
 //? if >= 1.21 <= 1.21.4
 //import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.resources.language.I18n;
+//? if <= 26.1.2 {
+/*import net.minecraft.client.resources.language.I18n;
+*///?} else
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
@@ -201,7 +201,7 @@ public abstract class MidnightConfig {
 
 	protected static Tooltip getTooltip(EntryInfo info) {
 		String key = info.id + "." + info.field.getName() + ".tooltip";
-		return Tooltip.create(info.error != null ? info.error : I18n.exists(key) ? Component.translatable(key) : Component.empty());
+		return Tooltip.create(info.error != null ? info.error : Language.getInstance().has(key) ? Component.translatable(key) : Component.empty());
 	}
 
 	private static void textField(EntryInfo info, Function<String,Number> f, Pattern pattern, double min, double max, boolean cast) {
@@ -297,7 +297,7 @@ public abstract class MidnightConfig {
 				if (e.id.equals(modid)) {
 					String tabId = e.field.isAnnotationPresent(Entry.class) ? e.field.getAnnotation(Entry.class).category() : e.field.getAnnotation(Comment.class).category();
 					String name = translationPrefix + "category." + tabId;
-					if (!I18n.exists(name) && tabId.equals("default"))
+					if (!Language.getInstance().has(name) && tabId.equals("default"))
 						name = translationPrefix + "title";
 					if (!tabs.containsKey(name)) {
 						Tab tab = new GridLayoutTab(Component.translatable(name));
@@ -306,9 +306,9 @@ public abstract class MidnightConfig {
 					} else e.tab = tabs.get(name);
 				}
 			}
-			tabNavigation = TabNavigationBar.builder(tabManager, this.width).addTabs(tabs.values().toArray(new Tab[0])).build();
+			//~ if > 26.1.2 'TabNavigationBar' -> 'MenuTabBar'
+			tabNavigation = MenuTabBar.builder(tabManager, this.width).addTabs(tabs.values().toArray(new Tab[0])).build();
 			tabNavigation.selectTab(0, false);
-			tabNavigation.arrangeElements();
 			prevTab = tabManager.getCurrentTab();
 		}
 		public final String translationPrefix;
@@ -379,15 +379,16 @@ public abstract class MidnightConfig {
 		@Override
 		public void init() {
 			super.init();
-//~ if >= 26.1 'setWidth' -> 'updateWidth' {
+//? if <= 26.1.2 {
+/*//~ if >= 26.1 'setWidth' -> 'updateWidth'
 			tabNavigation.updateWidth(this.width);
-//~}
-			tabNavigation.arrangeElements();
+*///?}
+			tabNavigation.arrangeElements(/*? if > 26.1.2 {*/this.width/*?}*/);
 			if (tabs.size() > 1) this.addRenderableWidget(tabNavigation);
 
 			this.addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> {
 				loadValues();
-				Objects.requireNonNull(minecraft).setScreen(parent);
+				minecraft.gui.setScreen(parent);
 			}).bounds(this.width / 2 - 154, this.height - 26, 150, 20).build());
 			done = this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, (button) -> {
 				for (EntryInfo info : entries)
@@ -397,7 +398,7 @@ public abstract class MidnightConfig {
 						} catch (IllegalAccessException ignored) {}
 					}
 				write(modid);
-				Objects.requireNonNull(minecraft).setScreen(parent);
+				minecraft.gui.setScreen(parent);
 			}).bounds(this.width / 2 + 4, this.height - 26, 150, 20).build());
 
 //? if >= 1.21 {
