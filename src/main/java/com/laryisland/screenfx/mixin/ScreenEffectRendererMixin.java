@@ -147,13 +147,6 @@ public abstract class ScreenEffectRendererMixin {
 		)
 	)
 	private static int inWallOverlay(int colour) {
-		System.out.println(colour);
-		System.out.println(net.minecraft.util.ARGB.colorFromFloat(
-			ScreenFXConfig.inWallOpacity,
-			ScreenFXConfig.inWallBrightness,
-			ScreenFXConfig.inWallBrightness,
-			ScreenFXConfig.inWallBrightness
-		));
 		return net.minecraft.util.ARGB.colorFromFloat(
 			ScreenFXConfig.inWallOpacity,
 			ScreenFXConfig.inWallBrightness,
