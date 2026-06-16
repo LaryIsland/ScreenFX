@@ -1,5 +1,5 @@
 plugins {
-	id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
+	id("net.fabricmc.fabric-loom") version "1.17-SNAPSHOT"
 }
 
 version = "${property("mod.version")}+${sc.current.version}"
@@ -34,7 +34,7 @@ loom {
 	}
 
 	runConfigs.all {
-		ideConfigGenerated(true)
+		isIdeConfigGenerated = true
 		vmArgs("-Dmixin.debug.export=true")
 		runDir = "../../run"
 	}

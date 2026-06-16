@@ -1,4 +1,4 @@
-fabric_loader = "0.19.2"
+fabric_loader = "0.19.3"
 
 [mod]
 version = "1.5.1"
@@ -66,14 +66,14 @@ mod.mc_targets = "1.21.9 1.21.10 1.21.11"
 fabric_api = "0.144.0+26.1"
 modmenu_version = "18.0.0-alpha.6"
 
-mod.mc_dep = ">=26.1"
+mod.mc_dep = ">=26.1 <= 26.1.2"
 mod.mc_title = "26.1.2"
 mod.mc_targets = "26.1 26.1.1 26.1.2"
 
-["26.2-pre-5"]
-fabric_api = "0.152.0+26.2"
-modmenu_version = "20.0.0-alpha.1"
+["26.2"]
+fabric_api = "0.152.1+26.2"
+modmenu_version = "20.0.0-beta.2"
 
-mod.mc_dep = ">26.1.2"
-mod.mc_title = "26.2-pre-5"
-mod.mc_targets = "26.2-pre-5"
+mod.mc_dep = ">=26.2"
+mod.mc_title = "26.2"
+mod.mc_targets = "26.2"
