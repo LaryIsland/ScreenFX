@@ -2,7 +2,7 @@ plugins {
 	id("dev.kikugie.stonecutter")
 }
 
-stonecutter active "26.2"
+stonecutter active "26.3-snapshot-4"
 
 // See https://stonecutter.kikugie.dev/wiki/config/params
 stonecutter parameters {
@@ -52,6 +52,11 @@ stonecutter parameters {
 			replace("renderWater", "submitWater")
 			replace("I18n.exists(", "Language.getInstance().has(")
 			replace("Objects.requireNonNull(minecraft).setScreen(", "minecraft.gui.setScreen(")
+		}
+
+		string(current.parsed > "26.2") {
+			replace(".blaze3d.pipeline.", ".renderpearl.api.pipeline.")
+			replace("/blaze3d/pipeline/", "/renderpearl/api/pipeline/")
 		}
 	}
 }

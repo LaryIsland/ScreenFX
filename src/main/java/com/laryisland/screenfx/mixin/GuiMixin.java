@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 //? if >= 1.21.6 {
 import net.minecraft.util.ARGB;
 import net.minecraft.core.registries.BuiltInRegistries;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.spongepowered.asm.mixin.injection.Redirect;
 //?}
@@ -67,7 +67,7 @@ public class GuiMixin {
 //? if <= 1.21.5 {
 			/^target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(Lnet/minecraft/client/renderer/RenderType;IIIIII)V"
 ^///?} else
-			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(Lcom/mojang/blaze3d/pipeline/RenderPipeline;IIIII)V"
+			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;IIIII)V"
 		),
 		index = /^? if <= 1.21.5 {^/ /^6 ^//^?} else ^/ 5
 	)
@@ -117,7 +117,7 @@ public class GuiMixin {
 		method = "extractSpyglassOverlay",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIFFIIII)V"
+			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIFFIIII)V"
 		)
 	)
 	private void spyglassOverlay_textureOpacity(GuiGraphicsExtractor gui, RenderPipeline pipeline, Identifier spyglassScope, int i, int j, float f, float g, int l, int m, int n, int o) {

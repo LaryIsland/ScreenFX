@@ -9,7 +9,7 @@ pluginManagement {
 }
 
 plugins {
-	id("dev.kikugie.stonecutter") version "0.9.4"
+	id("dev.kikugie.stonecutter") version "0.9.6"
 }
 
 stonecutter {
@@ -24,8 +24,8 @@ stonecutter {
 					}
 				)
 		}
-		versionsObfuscation("1.20.1", "1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.8", "1.21.11", "26.1.2", "26.2")
-		vcsVersion = "26.2"
+		versionsObfuscation("1.20.1", "1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.8", "1.21.11", "26.1.2", "26.2", "26.3-snapshot-4")
+		vcsVersion = "26.3-snapshot-4"
 	}
 }
 
