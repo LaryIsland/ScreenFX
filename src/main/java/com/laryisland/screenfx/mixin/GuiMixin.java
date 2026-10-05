@@ -152,7 +152,7 @@ public class GuiMixin {
 		}
 		for (int i = 0; i < 3; ++i) {
 			args.set(
-				i /^? if >= 1.21.6 {^/ +1 /^?}^/,
+				i /^? if >= 1.21.2 {^/ +1 /^?}^/,
 				(1f - rgbArray[i]) * opacity
 			);
 		}
@@ -182,7 +182,7 @@ public class GuiMixin {
 			}
 			for (int i = 0; i < 3; ++i) {
 				args.set(
-					i /^? if >= 1.21.6 {^/ +1 /^?}^/,
+					i /^? if >= 1.21.2 {^/ +1 /^?}^/,
 					(1f - rgbArray[i]) * opacity
 				);
 			}

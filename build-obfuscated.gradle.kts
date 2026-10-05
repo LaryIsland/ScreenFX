@@ -30,6 +30,15 @@ dependencies {
 	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
 	fapi("fabric-screen-api-v1", "fabric-key-binding-api-v1", "fabric-lifecycle-events-v1", "fabric-resource-loader-v0")
+
+	testImplementation("net.fabricmc:fabric-loader-junit:${property("fabric_loader")}")
+}
+
+// Tests only need vanilla plus ScreenFX, and Fabric API and Mod Menu are pinned to the oldest Minecraft version a
+// target supports (e.g. 1.21.9 for the 1.21.11 jar), which may not load on the newer Minecraft the tests run on.
+configurations.testRuntimeClasspath {
+	exclude(group = "remapped.net.fabricmc.fabric-api")
+	exclude(group = "remapped.com.terraformersmc")
 }
 
 loom {
@@ -83,6 +92,15 @@ publishMods {
 }
 
 tasks {
+	test {
+		useJUnitPlatform()
+		// Lets HandlerCoverageTest run after every other test class.
+		systemProperty("junit.jupiter.testclass.order.default", "org.junit.jupiter.api.ClassOrderer\$OrderAnnotation")
+		// Minecraft writes logs/ into the working directory, so keep it inside build/.
+		workingDir = layout.buildDirectory.dir("test-run").get().asFile
+		doFirst { workingDir.mkdirs() }
+	}
+
 	processResources {
 		inputs.property("id", project.property("mod.id"))
 		inputs.property("name", project.property("mod.name"))

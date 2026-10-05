@@ -24,8 +24,9 @@ dependencies {
 	implementation("net.fabricmc:fabric-loader:${property("fabric_loader")}")
 	implementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api")}")
 	implementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
-}
 
+	testImplementation("net.fabricmc:fabric-loader-junit:${property("fabric_loader")}")
+}
 loom {
 	fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
 	//accessWidenerPath = rootProject.file("src/main/resources/screenfx.accesswidener")
@@ -77,6 +78,15 @@ publishMods {
 }
 
 tasks {
+	test {
+		useJUnitPlatform()
+		// Lets HandlerCoverageTest run after every other test class.
+		systemProperty("junit.jupiter.testclass.order.default", "org.junit.jupiter.api.ClassOrderer\$OrderAnnotation")
+		// Minecraft writes logs/ into the working directory, so keep it inside build/.
+		workingDir = layout.buildDirectory.dir("test-run").get().asFile
+		doFirst { workingDir.mkdirs() }
+	}
+
 	processResources {
 		inputs.property("id", project.property("mod.id"))
 		inputs.property("name", project.property("mod.name"))

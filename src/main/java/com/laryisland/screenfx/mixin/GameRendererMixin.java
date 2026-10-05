@@ -43,7 +43,7 @@ public class GameRendererMixin {
 			rgbArray[1] = args.get(1);
 			rgbArray[2] = args.get(2);
 		}
-		float distortionStrength = (float) args.get(1) / 0.2f; // inverting mojang (0.2F * f) to get back f;
+		float distortionStrength = (float) args.get(0) / 0.2f; // inverting mojang (0.2F * f) to get back f;
 		args.set(0, rgbArray[0] * distortionStrength * ScreenFXConfig.distortionOpacity);
 		args.set(1, rgbArray[1] * distortionStrength * ScreenFXConfig.distortionOpacity);
 		args.set(2, rgbArray[2] * distortionStrength * ScreenFXConfig.distortionOpacity);
