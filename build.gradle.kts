@@ -1,5 +1,6 @@
 plugins {
-	id("net.fabricmc.fabric-loom") version "1.17-SNAPSHOT"
+	id("net.fabricmc.fabric-loom") version "1.18-SNAPSHOT"
+	id("me.modmuss50.mod-publish-plugin") version "2.2.1"
 }
 
 version = "${property("mod.version")}+${sc.current.version}"
@@ -44,6 +45,35 @@ java {
 	withSourcesJar()
 	targetCompatibility = requiredJava
 	sourceCompatibility = requiredJava
+}
+
+publishMods {
+	file = tasks.jar.flatMap { it.archiveFile }
+	version = property("mod.version") as String
+	displayName = "${property("mod.name")} v${property("mod.version")}"
+	changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
+	type = STABLE
+	modLoaders.addAll("fabric", "quilt")
+	dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrElse("").isEmpty()
+
+	val mcVersions = (property("mod.mc_targets") as String).split(" ")
+
+	modrinth {
+		projectId = property("mod.modrinth_id") as String
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		minecraftVersions.addAll(mcVersions)
+		optional("modmenu")
+	}
+
+	curseforge {
+		projectId = property("mod.curseforge_id") as String
+		projectSlug = property("mod.id") as String
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		minecraftVersions.addAll(mcVersions)
+		client = true
+		server = false
+		optional("modmenu")
+	}
 }
 
 tasks {

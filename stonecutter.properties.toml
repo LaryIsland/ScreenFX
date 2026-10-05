@@ -5,6 +5,8 @@ version = "1.5.1"
 group = "com.laryisland"
 id = "screenfx"
 name = "ScreenFX"
+modrinth_id = "M8z7jPlu"
+curseforge_id = "821617"
 
 ["1.20.1"]
 fabric_api = "0.92.8+1.20.1"
