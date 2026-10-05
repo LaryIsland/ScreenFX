@@ -36,13 +36,13 @@ jobs:
           TARGETS: ${{ steps.plan.outputs.modrinth }}
           MODRINTH_TOKEN: ${{ !inputs.dry_run && secrets.MODRINTH_TOKEN || '' }}
           CURSEFORGE_TOKEN: ${{ !inputs.dry_run && secrets.CURSEFORGE_TOKEN || '' }}
-        run: ./gradlew $(for v in $TARGETS; do printf ':%s:publishModrinth :%s:publishCurseforge ' "$v" "$v"; done)
+        run: ./gradlew --configure-on-demand $(for v in $TARGETS; do printf ':%s:publishModrinth :%s:publishCurseforge ' "$v" "$v"; done)
 
       - name: Build jars for the GitHub release
         if: steps.plan.outputs.github != '' && !inputs.dry_run
         env:
           TARGETS: ${{ steps.plan.outputs.github }}
-        run: ./gradlew $(for v in $TARGETS; do printf ':%s:build ' "$v"; done)
+        run: ./gradlew --configure-on-demand $(for v in $TARGETS; do printf ':%s:assemble ' "$v"; done)
 
       - name: Upload to the GitHub release
         if: steps.plan.outputs.github != '' && !inputs.dry_run
