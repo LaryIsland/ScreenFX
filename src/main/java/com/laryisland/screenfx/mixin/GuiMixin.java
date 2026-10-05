@@ -2,7 +2,6 @@
 /*package com.laryisland.screenfx.mixin;
 
 import static com.laryisland.screenfx.ScreenFX.validColour;
-
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -14,26 +13,31 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-//? if >= 1.21.6 {
-import net.minecraft.util.ARGB;
-import net.minecraft.core.registries.BuiltInRegistries;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import org.spongepowered.asm.mixin.injection.Redirect;
+
+//? if <= 1.21.1 {
+/^import org.spongepowered.asm.mixin.injection.At.Shift;
+^///?}
+
+//? if > 1.21.1 {
+import java.util.Optional;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.equipment.Equippable;
 //?}
+
 //? if <= 1.21.5 {
 /^import com.mojang.blaze3d.systems.RenderSystem;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 ^///?}
-//? if <= 1.21.1 {
-/^import org.spongepowered.asm.mixin.injection.At.Shift;
-^///?} else {
-import net.minecraft.world.item.equipment.Equippable;
-import net.minecraft.resources.Identifier;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EquipmentSlot;
-import java.util.Optional;
+
+//? if >= 1.21.6 {
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.ARGB;
+import org.spongepowered.asm.mixin.injection.Redirect;
 //?}
 
 @Mixin(Gui.class)

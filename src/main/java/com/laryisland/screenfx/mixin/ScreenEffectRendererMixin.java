@@ -1,36 +1,38 @@
 package com.laryisland.screenfx.mixin;
 
 import static net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE;
-
 import com.laryisland.screenfx.config.ScreenFXConfig;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
-//? if > 26.2
-import net.minecraft.client.renderer.state.level.PlayerRenderState.WaterOverlay;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-//? if <= 26.1.2 {
-/*import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-*///?}
-//? if != 1.21.4 != 1.21.5
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//? if >= 1.21.6
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-//? if <=1.21.3 {
+
+//? if <= 1.21.3 {
 /*import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+*///?}
+
+//? if != 1.21.4 != 1.21.5 <= 26.2
+//import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+//? if >= 1.21.6 <= 26.2
+//import org.spongepowered.asm.mixin.Shadow;
+
+//? if <= 26.1.2 {
+/*import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+*///?}
+
+//? if <= 26.2 {
+/*import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 *///?}
 
 @Mixin(ScreenEffectRenderer.class)

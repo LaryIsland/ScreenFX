@@ -1,11 +1,6 @@
 //? if <=1.21.8 {
 /*package com.laryisland.screenfx.mixin;
 
-//? if <=1.21.4 {
-/^import static net.minecraft.world.effect.MobEffects.DIG_SLOWDOWN;
-^///?} else
-import static net.minecraft.world.effect.MobEffects.MINING_FATIGUE;
-
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.Minecraft;
@@ -17,6 +12,13 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+//? if <=1.21.4 {
+/^import static net.minecraft.world.effect.MobEffects.DIG_SLOWDOWN;
+^///?}
+
+//? if > 1.21.4
+import static net.minecraft.world.effect.MobEffects.MINING_FATIGUE;
 
 @Mixin(MobAppearanceParticle.class)
 public abstract class MobAppearanceParticleMixin {

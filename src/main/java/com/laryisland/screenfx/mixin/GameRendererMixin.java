@@ -1,9 +1,16 @@
 //? if <= 1.21.5 {
 /*package com.laryisland.screenfx.mixin;
 
+import com.laryisland.screenfx.config.ScreenFXConfig;
+import net.minecraft.client.renderer.GameRenderer;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 //? if <=1.21.1 {
 /^import static com.laryisland.screenfx.ScreenFX.validColour;
-
 import com.laryisland.screenfx.config.ScreenFXConfig.effectModeEnum;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import java.awt.Color;
@@ -11,13 +18,6 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 ^///?}
-import net.minecraft.client.renderer.GameRenderer;
-import org.spongepowered.asm.mixin.Mixin;
-import com.laryisland.screenfx.config.ScreenFXConfig;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {

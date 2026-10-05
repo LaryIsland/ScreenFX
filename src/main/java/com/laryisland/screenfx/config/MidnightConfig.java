@@ -33,37 +33,45 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.components.tabs.*;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.tabs.*;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.ContainerObjectSelectionList;
-import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.EditBox;
-//? if >= 1.21.8 {
-import net.minecraft.client.renderer.RenderPipelines;
-//?} else
-//import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
+
+//? if >= 1.21
+import net.minecraft.resources.Identifier;
+
 //? if >= 1.21 <= 1.21.4
 //import com.mojang.blaze3d.systems.RenderSystem;
-//? if <= 26.1.2 {
-/*import net.minecraft.client.resources.language.I18n;
-*///?} else
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
+
+//? if >= 1.21.3 < 1.21.8
+//import net.minecraft.client.renderer.RenderType;
+
+//? if >= 1.21.8
+import net.minecraft.client.renderer.RenderPipelines;
+
 //? if >= 1.21.9
 import net.minecraft.client.input.KeyEvent;
+
+//? if <= 26.1.2
+//import net.minecraft.client.resources.language.I18n;
+
+//? if > 26.1.2
+import net.minecraft.locale.Language;
 
 // MidnightConfig v2.5.2
 

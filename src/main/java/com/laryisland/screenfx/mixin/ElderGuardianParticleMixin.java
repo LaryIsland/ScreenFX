@@ -2,7 +2,6 @@
 package com.laryisland.screenfx.mixin;
 
 import static net.minecraft.world.effect.MobEffects.MINING_FATIGUE;
-
 import com.laryisland.screenfx.config.ScreenFXConfig;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.Minecraft;
@@ -10,7 +9,6 @@ import net.minecraft.client.particle.ElderGuardianParticle;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 
 @Mixin(ElderGuardianParticle.class)
 public abstract class ElderGuardianParticleMixin {
