@@ -7,6 +7,8 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
+//? if > 26.2
+import net.minecraft.client.renderer.state.level.PlayerRenderState.WaterOverlay;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,16 +16,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 //? if <= 26.1.2 {
 /*import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 *///?}
 //? if != 1.21.4 != 1.21.5
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? if >= 1.21.6
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 //? if <=1.21.3 {
 /*import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -33,10 +36,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 @Mixin(ScreenEffectRenderer.class)
 public abstract class ScreenEffectRendererMixin {
 
-//? if >= 1.21.6 {
-	@Shadow
+//? if >= 1.21.6 <= 26.2 {
+	/*@Shadow
 	private int itemActivationTicks;
-//?}
+*///?}
 
 //? if <= 26.1.2 {
 	/*@ModifyArg(
@@ -99,20 +102,22 @@ public abstract class ScreenEffectRendererMixin {
 		return f + ScreenFXConfig.firePosition - 0.5f; // default value is -0.3f
 	}
 
-	@ModifyArg(
+//? if <= 26.2 {
+	/*@ModifyArg(
 		method = "submitWater",
 		at = @At(
 			value = "INVOKE",
 //? if <=1.21.3 {
-			/*target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
-*///?} else
+			/^target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
+^///?} else
 			target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"
 		),
-		index = /*? if <=1.21.3 {*/ /*3 *//*?} else*/ 0
+		index = /^? if <=1.21.3 {^/ /^3 ^//^?} else^/ 0
 	)
 	private static float underwaterOverlay(float alpha) {
 		return ScreenFXConfig.underwaterOpacity;
 	}
+*///?}
 
 //? if <= 26.1.2 {
 	/*@ModifyArgs(
@@ -143,7 +148,10 @@ public abstract class ScreenEffectRendererMixin {
 		method = "lambda$submitBlockSprite$0",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/ScreenEffectRenderer;buildSpriteQuad(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;FFFFFI)V"
+//? if <= 26.2 {
+			/*target = "Lnet/minecraft/client/renderer/ScreenEffectRenderer;buildSpriteQuad(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;FFFFFI)V"
+*///?} else
+			target = "Lnet/minecraft/client/renderer/ScreenEffectRenderer;buildQuad(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lorg/joml/Matrix4f;FFFFFFFFFI)V"
 		)
 	)
 	private static int inWallOverlay(int colour) {
@@ -174,7 +182,8 @@ public abstract class ScreenEffectRendererMixin {
 	}
 *///?}
 
-	@ModifyExpressionValue(
+//? if <= 26.2 {
+	/*@ModifyExpressionValue(
 //$render_screen_effect
 		method = "submit",
 		at = @At(
@@ -208,9 +217,10 @@ public abstract class ScreenEffectRendererMixin {
 			cir.setReturnValue(Blocks.COBBLESTONE.defaultBlockState());
 		}
 	}
+*///?}
 
-//? if >= 1.21.6 {
-	@Inject(
+//? if >= 1.21.6 <= 26.2 {
+	/*@Inject(
 		method = "renderItemActivationAnimation",
 		at = @At("HEAD")
 	)
@@ -219,5 +229,5 @@ public abstract class ScreenEffectRendererMixin {
 			this.itemActivationTicks = 0;
 		}
 	}
-//?}
+*///?}
 }

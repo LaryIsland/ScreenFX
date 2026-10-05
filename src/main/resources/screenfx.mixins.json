@@ -3,7 +3,6 @@
 	"package": "com.laryisland.screenfx.mixin",
 	"compatibilityLevel": "${java}",
 	"client": [
-		"ItemInHandRendererMixin"
 		,"ScreenEffectRendererMixin"
 ${mixinList}
 	],

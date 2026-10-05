@@ -66,6 +66,12 @@ tasks {
 			appendLine("""		,"ElderGuardianParticleMixin"""")
 			appendLine("""		,"ElderGuardianParticleGroupMixin"""")
 			appendLine("""		,"ElderGuardianParticleGroupMixin${'$'}ElderGuardianRenderStateMixin"""")
+			if (stonecutter.compare(stonecutter.current.version, "26.3") >= 0) {
+				appendLine("""		,"FirstPersonHandsAndItemsRendererMixin"""")
+				appendLine("""		,"LevelExtractorMixin"""")
+			} else {
+				appendLine("""		,"ItemInHandRendererMixin"""")
+			}
 			append("""		,"HudMixin"""")
 		}
 

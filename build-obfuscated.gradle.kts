@@ -70,6 +70,7 @@ tasks {
 
 		val mixinList = buildString {
 			appendLine("""		"GuiMixin"""")
+			appendLine("""		,"ItemInHandRendererMixin"""")
 			if (stonecutter.compare(stonecutter.current.version, "1.21.9") >= 0) {
 				appendLine("""		,"ElderGuardianParticleMixin"""")
 				appendLine("""		,"ElderGuardianParticleGroupMixin"""")
