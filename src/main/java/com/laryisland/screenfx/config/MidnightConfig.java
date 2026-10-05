@@ -151,7 +151,7 @@ public abstract class MidnightConfig {
 					info.defaultValue = field.get(null);
 				} catch (IllegalAccessException ignored) {}
 		}
-		try { gson.fromJson(Files.newBufferedReader(path), config); }
+		try (var reader = Files.newBufferedReader(path)) { gson.fromJson(reader, config); }
 		catch (Exception e) { write(modid); }
 
 		for (EntryInfo info : entries) {
@@ -362,7 +362,7 @@ public abstract class MidnightConfig {
 			}
 		}
 		public void loadValues() {
-			try { gson.fromJson(Files.newBufferedReader(path), configClass.get(modid)); }
+			try (var reader = Files.newBufferedReader(path)) { gson.fromJson(reader, configClass.get(modid)); }
 			catch (Exception e) { write(modid); }
 
 			for (EntryInfo info : entries) {

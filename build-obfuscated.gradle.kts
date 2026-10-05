@@ -40,9 +40,9 @@ loom {
 	}
 
 	runConfigs.all {
-		isIdeConfigGenerated = true
-		vmArgs("-Dmixin.debug.export=true")
-		runDir = "../../run"
+		generateRunConfig = true
+		jvmArguments.add("-Dmixin.debug.export=true")
+		runDirectory = file("../../run")
 	}
 }
 
@@ -68,22 +68,24 @@ tasks {
 
 		filesMatching("fabric.mod.json") { expand(props) }
 
-		val mixinList = buildString {
-			appendLine("""		"GuiMixin"""")
-			appendLine("""		,"ItemInHandRendererMixin"""")
+		val mixinList = buildList {
+			add("GuiMixin")
+			add("ItemInHandRendererMixin")
 			if (stonecutter.compare(stonecutter.current.version, "1.21.9") >= 0) {
-				appendLine("""		,"ElderGuardianParticleMixin"""")
-				appendLine("""		,"ElderGuardianParticleGroupMixin"""")
-				append("""		,"ElderGuardianParticleGroupMixin${'$'}ElderGuardianRenderStateMixin"""")
+				add("ElderGuardianParticleMixin")
+				add("ElderGuardianParticleGroupMixin")
+				add("ElderGuardianParticleGroupMixin\$ElderGuardianRenderStateMixin")
 			} else {
 				if (stonecutter.compare(stonecutter.current.version, "1.21.5") <= 0) {
-					appendLine("""		,"GameRendererMixin"""")
+					add("GameRendererMixin")
 				}
-				append("""		,"MobAppearanceParticleMixin"""")
+				add("MobAppearanceParticleMixin")
 			}
-		}
+		}.joinToString("\",\n\t\t\"")
 
 		val mixinJava = "JAVA_${requiredJava.majorVersion}"
+		inputs.property("mixinList", mixinList)
+		inputs.property("mixinJava", mixinJava)
 		filesMatching("*.mixins.json") { expand("java" to mixinJava, "mixinList" to mixinList) }
 	}
 

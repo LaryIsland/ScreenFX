@@ -3,8 +3,8 @@
 	"package": "com.laryisland.screenfx.mixin",
 	"compatibilityLevel": "${java}",
 	"client": [
-		,"ScreenEffectRendererMixin"
-${mixinList}
+		"ScreenEffectRendererMixin",
+		"${mixinList}"
 	],
 	"injectors": {
 		"defaultRequire": 1
